@@ -1,11 +1,11 @@
 #Grbl 0.8c/j c't Hacks GRBL-Jogger Version
 
-_An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller_
+**An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller**
 
 Note: Version 0.8c/j (prelimiary) for ATmega644 with jog control. Intended for 
-use with _c't Hacks GRBL-Jogger PCB_. Default settings and Z scaling for _c't 
-Hacks WOODMILL_ project. Recompile for 644P or different Z scale setting - see 
-_config.h_ and _pin_map.h_ files for details.
+use with **c't Hacks GRBL-Jogger PCB**. Default settings and Z scaling for **c't 
+Hacks WOODMILL** project. Recompile for 644P or different Z scale setting - see 
+'config.h' and 'pin_map.h' files for details.
 
 ------------
 
