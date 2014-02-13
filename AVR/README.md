@@ -1,10 +1,11 @@
 #Grbl 0.8c/j c't Hacks GRBL-Jogger Version
 
-An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller
+_An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller_
 
-Note: Version 0.8c/j (prelimiary) for ATmega644 with jog control. Intended for use with *c't 
-Hacks GRBL-Jogger PCB*. Default settings and Z scaling for *c't Hacks WOODMILL* 
-project. Recompile for 644P or different Z scale seting.
+Note: Version 0.8c/j (prelimiary) for ATmega644 with jog control. Intended for 
+use with _c't Hacks GRBL-Jogger PCB_. Default settings and Z scaling for _c't 
+Hacks WOODMILL_ project. Recompile for 644P or different Z scale setting - see 
+_config.h_ and _pin_map.h_ files for details.
 
 ------------
 
@@ -16,56 +17,10 @@ It accepts standards-compliant G-code and has been tested with the output of sev
 
 Grbl includes full acceleration management with look ahead. That means the controller will look up to 18 motions into the future and plan its velocities ahead to deliver smooth acceleration and jerk-free cornering.
 
-##Downloads (Right-Click and Save-Link-As):
-_**Master Branch:**_
-* [Grbl v0.8c Atmega328p 16mhz 9600baud](http://bit.ly/SSdCJE) (Last updated: 2013-12-07)
-  - 2013-12-07: G18 and serial volatile fixes.
-  - 2013-04-05: Line buffer increased and overflow feedback added.
-
-_**Edge/Development Branch:**_
-* [Grbl v0.9a Build 2013-03-19](http://bit.ly/Y0tMHo) : Edge Branch
-  - New experimental stepper algorithm. Smoother. Axes acceleration and maximum velocity limits. Automatic arc segment scaling by tolerance setting, leading to much faster feedrates about them. Updated g-code G10. 30kHz step rate absolute max. CAUTION: Bugs still exist. Settings WILL be over-written. Please let us know of any lingering bugs (except with homing).
-* [Grbl v0.9b Build 2013-12-10](http://bit.ly/1bChskB) : Dev Branch (Baudrate: 115200) 
-  - Developmental branch build. Protected planner buffer and new step segment buffer allow performance increases over 4x in limited testing. No more racing conditions when jogging. Fearlessly drive at the maximum speeds of your machine. New soft limits feature that will safely prevent your machine exceed its travel limits and retain true positioning (only works with homing enabled). Homing cycle improvement. CAUTION: Bugs still exist and fixes will be pushed Settings WILL be over-written. Please let us know of any lingering bugs.
-  
-_**Archives:**_
-* [Grbl v0.8a Atmega328p 16mhz 9600baud](http://bit.ly/TVCTVv)
-* [Grbl v0.7d Atmega328p 16mhz 9600baud](http://bit.ly/ZhL15G)
-* [Grbl v0.6b Atmega328p 16mhz 9600baud](http://bit.ly/VD04A5)
-* [Grbl v0.6b Atmega168 16mhz 9600baud](http://bit.ly/SScWnE)
-* [Grbl v0.51 Atmega328p 16mhz 9600baud](http://bit.ly/W75BS1)
-* [Grbl v0.51 Atmega168 16mhz 9600baud](http://bit.ly/VXyrYu)
-
-
-##Changelog for v0.8 from v0.7:
-  - Major structural overhaul to allow for multi-tasking events and new feature sets.
-  - Run-time command control: Feed hold (pause), Cycle start (resume), Reset (abort), Status reporting (current position and state).
-  - Controlled feed hold with deceleration to ensure no skipped steps and loss of location.
-  - After feed hold, cycle accelerations are re-planned and may be resumed.
-  - Advanced homing cycle with direction and speed configuration options. (Requires limit switches.) When enabled, homing is required before use to ensure safety.
-  - Limit pins are held normal high with internal pull-up resistors. Wiring only requires a normally-open switch connected to ground. (For both ends of an axis, simply wire two in parallel into the same pin.)
-  - Hard limits option and plays nice with homing cycle, so switches can be used for both homing and hard limits.
-  - A check g-code mode has also been added to allow users to error check their programs.
-  - Re-factored g-code parser with robust error-checking.
-  - 6 work coordinate systems (G54-G59), offsets(G92), and machine coordinate system support. Work coordinate systems are stored in EEPROM and persistent.
-  - G10 L2 and L20 work coordinate settings support. L2 sets one or more axes values. L20 sets the current machine position to the specified work origin.
-  - G28.1 and G30.1 set home position support. These set the internal EEPROM parameter values to the current machine position. (G28 and G30 no longer perform homing cycle, '$H' does. They move to these stored positions.)
-  - Program stop(M0,M2,M30) support.
-  - Coolant control(M7*,M8,M9) support. (M7 is a compile-time option).
-  - G-code parser state and '#' parameters feedback.
-  - System reset re-initializes grbl without resetting the Arduino and retains machine/home position and work coordinates.
-  - Settings overhauled and dozens of new settings and internal commands are now available, when most were compile-time only.
-  - New startup line setting. Allows users to store a custom g-code block into Grbl's startup routine. Executes immediately upon startup or reset. May be used to set g-code defaults like G20/G21.
-  - Pin-outs of the cycle-start, feed-hold, and soft-reset runtime commands on pins A0-A2.
-  - Misc bug fixes and removed deprecated acceleration enabled code.  
-  - Advanced compile-time options: XON/XOFF flow control (limited support), direction and step pulse time delay, up to 5 startup lines, and homing sequence configurability.
-  
-
-*Important note for Atmega 168 users:* Going forward, support for Atmega 168 will be dropped due to its limited memory and speed. However, legacy Grbl v0.51 "in the branch called 'v0_51' is still available for use.
-
 _The project was initially inspired by the Arduino GCode Interpreter by Mike Ellery_
 
 -------------
+
 Grbl is an open-source project and fueled by the free-time of our intrepid administrators and altruistic users. If you'd like to donate, all proceeds will be used to help fund supporting hardware and testing equipment. Thank you!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNQZV7GRGQKVY)
