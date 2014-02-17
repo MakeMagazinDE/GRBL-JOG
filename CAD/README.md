@@ -1,4 +1,4 @@
-#c't Hacks Holzfr‰se
+#c't Hacks Holzfr√§se
 
-**CNC-Fr‰se aus Multiplex-Sperrholz**
+Siehe Github-Repo **[NC-Fr√§se aus Multiplex-Sperrholz](https://github.com/heise/WOODMILL)**
 
