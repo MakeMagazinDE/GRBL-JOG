@@ -58,7 +58,7 @@ Wichtige Hinweise
 
 Bei Montage TFT-Maximite 4x Abstandsbolzen M3 x 30 mm
 Bauteile mit "*"  nur erforderlich bei LM2574 N-ADJ, entfallen bei LM2574 N5
-Bauteile mit "**" nur erforderlich bei LM2574 N5, entfallen bei LM2574 N-ADJ
+Bauteile mit "**" (R8 = Drahtbrücke) nur erforderlich bei LM2574 N5, entfallen bei LM2574 N-ADJ
 Relais 10A z.B. Reichelt HJR3FF 24VDC SZ oder HJR3FF 12VDC SZ, Segor F3611-12 oder F3611-24, Spannung je nach Versorgung
 Anschlussklemmen z.B. Reichelt AKL 249-02 und AKL 220-02, Segor ARK 2/Stift und ARK 2/SteckV
 Multimec-Taster: Kappenfarbe (xx) nach Wahl, 03=grau, 06=weiß, 09=schwarz, 30=blau
