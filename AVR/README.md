@@ -1,4 +1,12 @@
-#Grbl 0.8c/j c't Hacks GRBL-Jogger Version
+#Grbl 0.8c/j 
+
+**c't Hacks GRBL-Jogger Version**
+
+GRBL-Sourcen und HEX-File für ATmega644, Default-Parameter angepasst für [c't Hacks Holzfräse](https://github.com/heise/WOODMILL). Bei Verwendung eines ATmega644P ist ein hierfür kompiliertes HEX-File nötig!
+
+**Achtung:** Ausgelegt für positive Z-Werte (negative Z-Werte im Werkstück). Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkstück) - ggf. Z-Skalierung oder Schrittmotor-Richtung in GRBL-Port-Invertierungsparametern ändern.
+
+Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
 
 **An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller**
 
