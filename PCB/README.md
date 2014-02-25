@@ -1,6 +1,9 @@
-#c't Hacks GRBL-Jogger PCB
+#GRBL-Jogger PCB
 
-**Printed Cicuit Board for GRBL 0.8c/j with ATmega644**
+###Schrittmotor-Controller mit ATmega644 und Jogpad
+
+
+Gerber-Dateien zur Platinenfertigung sowie Layouts zum Selbstätzen. Zum Ansehen der PDFs "View raw" anklicken und downloaden. Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**. Fertige Leerplatinen können Sie im **[c't Eurocircuits-Shop](http://ct.eurocircuits.de)** bestellen.
 
 Note: "View Raw" to download PDFs. Gerber Files for PCB production. Double-sided PCB with silk position print available at [ct.eurocircuits.de](http://ct.eurocircuits.de/ "c't Hacks Eurocircuits Shop")
 

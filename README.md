@@ -1,12 +1,12 @@
 #GRBL-Jogger
 
-###Schrittmotor-Controller mit ATmega644
+###Schrittmotor-Controller mit ATmega644 und Jogpad
 
 GRBL-kompatible Platine mit manueller Steuerung über Jogpad, Anschlussmöglichkeit für [TFT-Maximite BASIC-Panel-Computer](http://www.segor.de/#/bauteilesaetze-a-module/bauteilesaetze/ct-tft-maximite), LPT-Buchse zum Anschluss chinesischer und Langenfeld-kompatibler Schrittmotor-Endstufen
 
 Fertige Leerplatinen können Sie im **[c't Eurocircuits-Shop](http://ct.eurocircuits.de)** bestellen.
 
-* **PCB** Platinen-Layouts im Gerber/Excellon-Format, Schaltplan, Bestückungsplan, Abmessungen als PDF 
+* **PCB** Platinen-Layouts im Gerber/Excellon-Format sowie Layouts, Schaltplan, Bestückungsplan, Abmessungen als PDF 
 * **BAS** Beispiel-Programme (GCode-Sender) für TFT Maximite
 * **AVR** GRBL-Sourcen und HEX-File für ATmega644, Default-Parameter angepasst für [c't Hacks Holzfräse](https://github.com/heise/WOODMILL). Bei Verwendung eines ATmega644P ist ein hierfür kompiliertes HEX-File nötig!
 * **PartsList.txt** Stückliste elektronische Bauteile
