@@ -84,3 +84,5 @@ Bei Montage TFT-Maximite 4x Abstandsbolzen M3 x 30 mm erforderlich
 Bauteile mit "*"  nur erforderlich bei LM2574 N-ADJ, entfallen bei LM2574 N5
 Bauteile mit "**" (R8 = Drahtbrücke) nur erforderlich bei LM2574 N5, entfallen bei LM2574 N-ADJ
 Bei Verwendung eines ATmega644P ist ein hierfür kompiliertes HEX-File nötig!
+
+Unser Leser Tom Martin hat freundlicherweise einen **[https://secure.reichelt.de/index.html?&ACTION=20&AWKID=875060&PROVID=2084](Reichelt-Warenkorb)** zusammengestellt. Evt. passt die DC-Buchse nicht perfekt; wir hatten unser Muster von Segor (Bestellnr: DCBU 2,1-PR) bezogen. Anmerkung: Der Heise Zeitschriften Verlag steht weder mit Reichelt, Eurocircuit noch Segor in einer Provisions- oder Geschäftsbeziehung.
