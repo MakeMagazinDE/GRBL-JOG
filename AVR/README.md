@@ -2,9 +2,12 @@
 
 **c't Hacks GRBL-Jogger Version**
 
-GRBL-Sourcen und HEX-File für ATmega644, Default-Parameter angepasst für [c't Hacks Holzfräse](https://github.com/heise/WOODMILL). Bei Verwendung eines ATmega644P ist ein hierfür kompiliertes HEX-File nötig!
+GRBL-Sourcen und HEX-File fï¿½r ATmega644, Default-Parameter angepasst fï¿½r [c't Hacks Holzfrï¿½se](https://github.com/heise/WOODMILL). Bei Verwendung eines ATmega644P ist ein hierfï¿½r kompiliertes HEX-File nï¿½tig!
 
-**Achtung:** Ausgelegt für positive Z-Werte (negative Z-Werte im Werkstück). Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkstück) - ggf. Z-Skalierung oder Schrittmotor-Richtung in GRBL-Port-Invertierungsparametern ändern.
+**Achtung:** Ausgelegt fï¿½r positive Z-Werte (negative Z-Werte im Werkstï¿½ck). Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkstï¿½ck) - ggf. Z-Skalierung oder Schrittmotor-Richtung in GRBL-Port-Invertierungsparametern ï¿½ndern:
+
+Normal (Z+ oben): $6=8  $18=160
+Invert (Z+ down): $6=0  $18=168
 
 Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
 
