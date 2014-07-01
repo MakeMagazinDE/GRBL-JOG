@@ -64,7 +64,7 @@ void jog_init() {
 }
 
 #ifdef JOG_SPI_PRESENT
-// TODO: send SPI on /SS request. Dummy data for now
+// TODO: send SPI on /SS request. Dummy data for now, does not work
 
   void spi_transmit(uint8_t SPI_data) {
     /* Start transmission */
@@ -140,6 +140,28 @@ void jogging()
   if (!jog_bits) { return; }  // nothing pressed
   
   // At least one jog/joystick switch is active 
+  if (jog_bits & (1<<JOG_ZERO)) {     // Zero-Button gedrückt
+    jog_btn_release();
+    sys.state = last_sys_state;
+    if (bit_isfalse(PINOUT_PIN,bit(PIN_RESET))) { // RESET und zusätzlich ZERO gedrückt: Homing  
+      if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { 
+        // Only perform homing if Grbl is idle or lost.
+        if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) { 
+          mc_go_home(); 
+          if (!sys.abort) { protocol_execute_startup(); } // Execute startup scripts after successful homing.
+        }
+      }
+    } else { // Zero current work position
+//      gc.coord_system[i]    Current work coordinate system (G54+). Stores offset from absolute machine
+//                            position in mm. Loaded from EEPROM when called.
+//      gc.coord_offset[i]    Retains the G92 coordinate offset (work coordinates) relative to
+//                            machine zero in mm. Non-persistent. Cleared upon reset and boot.  
+      for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
+        gc.coord_offset[i] = gc.position[i]-gc.coord_system[i];
+      } 
+    }                   
+    return;
+  } 
   
   ADCSRA = ADCSRA_init | (1<<ADIF); //0x93, clear ADIF
 
@@ -185,38 +207,15 @@ void jogging()
     jog_select = 2;
   } 
 
-  if (jog_bits & (1<<JOG_ZERO)) {     // Zero-Button gedrückt
-    jog_btn_release();
-    sys.state = last_sys_state;
-    if (bit_isfalse(PINOUT_PIN,bit(PIN_RESET))) { // RESET und zusätzlich ZERO gedrückt: Homing  
-      if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { 
-        // Only perform homing if Grbl is idle or lost.
-        if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) { 
-          mc_go_home(); 
-          if (!sys.abort) { protocol_execute_startup(); } // Execute startup scripts after successful homing.
-        }
-      }
-    } else { // Zero current work position
-//      gc.coord_system[i]    Current work coordinate system (G54+). Stores offset from absolute machine
-//                            position in mm. Loaded from EEPROM when called.
-//      gc.coord_offset[i]    Retains the G92 coordinate offset (work coordinates) relative to
-//                            machine zero in mm. Non-persistent. Cleared upon reset and boot.  
-      for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
-        gc.coord_offset[i] = gc.position[i]-gc.coord_system[i];
-        #ifdef JOG_SPI_PRESENT
-          send_spi_position(i);
-        #endif
-      } 
-    }                   
-    return;
-  } 
   dest_step_rate = ADCH;    // set initial dest_step_rate according to analog input
   dest_step_rate = (dest_step_rate * JOG_SPEED_FAC) + JOG_MIN_SPEED;  
   step_rate = JOG_MIN_SPEED;   // set initial step rate
   jog_exit = 0; 
   while (!(ADCSRA && (1<<ADIF))) {} // warte bis ADIF-Bit gesetzt 
   ADCSRA = ADCSRA_init; // exit conversion
+  
   st_wake_up();
+
   // prepare direction with small delay, direction settle time
   STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | (out_bits0 & STEPPING_MASK);
   delay_us(10);
@@ -224,7 +223,8 @@ void jogging()
   i = 0;  // now index for sending position data 
   
   for(;;) { // repeat until button/joystick released  
-    // report_realtime_status();
+//    report_realtime_status(); // benötigt viel Zeit!
+    
     ADCSRA = ADCSRA_init | (1<<ADIF); //0x93, clear ADIF
 
     // Get limit pin state
@@ -281,9 +281,11 @@ void jogging()
     }
     delay_us(step_delay);
     
+#ifdef JOG_SPI_PRESENT
     send_spi_position(i); // bei jedem Durchlauf nur eine Achse übertragen
     i++;
     if (i>2) {i=0;}
+#endif 
       
     while (!(ADCSRA && (1<<ADIF))) {} // warte ggf. bis ADIF-Bit gesetzt  
     ADCSRA = ADCSRA_init;     // exit conversion
