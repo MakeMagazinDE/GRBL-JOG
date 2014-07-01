@@ -6,8 +6,8 @@ GRBL-Sourcen und HEX-File f�r ATmega644, Default-Parameter angepasst f�r [c'
 
 **Achtung:** Ausgelegt f�r positive Z-Werte (negative Z-Werte im Werkst�ck). Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkst�ck) - ggf. Z-Skalierung oder Schrittmotor-Richtung in GRBL-Port-Invertierungsparametern �ndern:
 
-Normal (Z+ oben): $6=8  $18=160
-Invert (Z+ down): $6=0  $18=168
+Normal (Z+ up): $6=8 / $18=160<br>
+Invert (Z+ down): $6=0 / $18=168<br>
 
 Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
 
@@ -17,6 +17,9 @@ Note: Version 0.8c/j (prelimiary) for ATmega644 with jog control. Intended for
 use with **c't Hacks GRBL-Jogger PCB**. Default settings and Z scaling for **c't 
 Hacks WOODMILL** project. Recompile for 644P or different Z scale setting - see 
 'config.h' and 'pin_map.h' files for details.
+
+Normal (Z+ up): $6=8 / $18=160<br>
+Invert (Z+ down): $6=0 / $18=168<br>
 
 ------------
 
