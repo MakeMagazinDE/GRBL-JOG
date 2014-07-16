@@ -35,10 +35,7 @@ OBJECTS    = main.o motion_control.o gcode.o spindle_control.o coolant_control.o
              protocol.o stepper.o eeprom.o settings.o planner.o nuts_bolts.o limits.o \
              print.o report.o jogging.o
 
-# FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
-FUSES      = -U hfuse:w:0xd2:m -U lfuse:w:0xff:m
-# update that line with this when programmer is back up:
-# FUSES      = -U hfuse:w:0xd7:m -U lfuse:w:0xff:m
+FUSES      = -U lfuse:w:0xf7:m -U hfuse:w:0xd9:m -U efuse:w:0xfd:m
 
 # Tune the lines below only if you know what you are doing:
 

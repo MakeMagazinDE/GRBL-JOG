@@ -251,6 +251,10 @@ void mc_go_home()
   plan_synchronize(); // Make sure the motion completes.
   
   // The gcode parser position circumvented by the pull-off maneuver, so sync position vectors.
+  sys.position[X_AXIS] = 0;
+  sys.position[Y_AXIS] = 0;
+  sys.position[Z_AXIS] = 0;
+
   sys_sync_current_position();
 
   // If hard limits feature enabled, re-enable hard limits pin change register after homing cycle.

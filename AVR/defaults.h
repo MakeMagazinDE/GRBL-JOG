@@ -31,8 +31,11 @@
   // Grbl generic default settings. Should work across different machines.
   #define DEFAULT_X_STEPS_PER_MM 250.0
   #define DEFAULT_Y_STEPS_PER_MM 250.0
-  #define DEFAULT_Z_SCALE 1.0
+  #define DEFAULT_Z_PULLOFF 2.0 // mm, Pull back Z after pressing ZERO center btn
+  #define DEFAULT_Z_GAUGE 10.0 // mm, Z Gauge Block Dicke
+  #define DEFAULT_Z_SCALE 5.0  // Trick um für Z kleineren Vorschub zu erzwingen
   #define DEFAULT_Z_STEPS_PER_MM 250.0
+
   #define DEFAULT_STEP_PULSE_MICROSECONDS 10
   #define DEFAULT_MM_PER_ARC_SEGMENT 0.1
   #define DEFAULT_RAPID_FEEDRATE 500.0 // mm/min
@@ -60,8 +63,10 @@
   // Note Z scaling in gcode.c and report.c for different Z axis speed (well, its a kludge...)
   #define DEFAULT_X_STEPS_PER_MM 80.0
   #define DEFAULT_Y_STEPS_PER_MM 80.0
-  #define DEFAULT_Z_SCALE 5.0
   #define DEFAULT_Z_STEPS_PER_MM 533.333/DEFAULT_Z_SCALE // note Z-scaling to reduce axis speed
+  #define DEFAULT_Z_PULLOFF 0.0 // mm, auto pull back Z after pressing ZERO center btn
+  #define DEFAULT_Z_GAUGE 10.0 // mm, Z Gauge Block Dicke
+  #define DEFAULT_Z_SCALE 5.0  // Trick um für Z kleineren Vorschub zu erzwingen
 
   #define DEFAULT_STEP_PULSE_MICROSECONDS 10
   #define DEFAULT_MM_PER_ARC_SEGMENT 0.2

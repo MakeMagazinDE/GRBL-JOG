@@ -234,7 +234,7 @@ uint8_t gc_execute_line(char *line)
         break;
       case 'X': target[X_AXIS] = to_millimeters(value); bit_true(axis_words,bit(X_AXIS)); break;
       case 'Y': target[Y_AXIS] = to_millimeters(value); bit_true(axis_words,bit(Y_AXIS)); break;
-      case 'Z': target[Z_AXIS] = to_millimeters(value) * DEFAULT_Z_SCALE; bit_true(axis_words,bit(Z_AXIS)); break;
+      case 'Z': target[Z_AXIS] = to_millimeters(value) * settings.z_scale; bit_true(axis_words,bit(Z_AXIS)); break;
       default: FAIL(STATUS_UNSUPPORTED_STATEMENT);
     }
   }

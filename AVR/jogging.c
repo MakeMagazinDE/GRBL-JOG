@@ -115,7 +115,7 @@ void jogging()
     case STATE_CYCLE: case STATE_HOMING: case STATE_INIT:
       LED_PORT |= (1<<LED_ERROR_BIT);     
       return;
-    case STATE_ALARM: 
+    case STATE_ALARM: case STATE_QUEUED: 
       LED_PORT &= ~(1<<LED_ERROR_BIT);  break;
     default: 
       LED_PORT |= (1<<LED_ERROR_BIT);                 
@@ -152,14 +152,33 @@ void jogging()
         }
       }
     } else { // Zero current work position
+
+      sys_sync_current_position();
+
 //      gc.coord_system[i]    Current work coordinate system (G54+). Stores offset from absolute machine
 //                            position in mm. Loaded from EEPROM when called.
 //      gc.coord_offset[i]    Retains the G92 coordinate offset (work coordinates) relative to
 //                            machine zero in mm. Non-persistent. Cleared upon reset and boot.  
+
       for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
-        gc.coord_offset[i] = gc.position[i]-gc.coord_system[i];
+        gc.coord_offset[i] = gc.position[i] - gc.coord_system[i];
       } 
-    }                   
+
+// Z-Achse um bestimmten Betrag zurückziehen                  
+      mc_line(gc.position[X_AXIS], gc.position[Y_AXIS], gc.position[Z_AXIS] 
+        + (settings.z_zero_pulloff * settings.z_scale), settings.default_seek_rate, false);
+        
+      plan_synchronize(); // Make sure the motion completes
+      
+      gc.position[Z_AXIS] = gc.position[Z_AXIS] - (settings.z_zero_gauge * settings.z_scale);
+      gc.coord_offset[Z_AXIS] = gc.position[Z_AXIS] - gc.coord_system[Z_AXIS];
+      
+// The gcode parser position circumvented by the pull-off maneuver, so sync position vectors.
+// Sets the planner position vector to current steps. Called by the system abort routine.
+// Sets g-code parser position in mm. Input in steps. Called by the system abort and hard
+      sys_sync_current_position(); // Syncs all internal position vectors to the current system position.
+
+    }
     return;
   } 
   
@@ -215,7 +234,8 @@ void jogging()
   ADCSRA = ADCSRA_init; // exit conversion
   
   st_wake_up();
-
+  
+ 
   // prepare direction with small delay, direction settle time
   STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | (out_bits0 & STEPPING_MASK);
   delay_us(10);

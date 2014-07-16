@@ -71,6 +71,9 @@ typedef struct {
   float homing_seek_rate;
   uint16_t homing_debounce_delay;
   float homing_pulloff;
+  float z_zero_pulloff;
+  float z_zero_gauge;
+  float z_scale;
   uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
   uint8_t decimal_places;
   uint8_t n_arc_correction;

@@ -222,7 +222,7 @@ static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, fl
 
 
 void limits_go_home() 
-{  
+{    
   // Enable only the steppers, not the cycle. Cycle should be inactive/complete.
   st_wake_up();
   

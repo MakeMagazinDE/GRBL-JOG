@@ -92,6 +92,9 @@ void settings_reset(bool reset_all) {
   settings.homing_seek_rate = DEFAULT_HOMING_RAPID_FEEDRATE;
   settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
   settings.homing_pulloff = DEFAULT_HOMING_PULLOFF;
+  settings.z_zero_pulloff = DEFAULT_Z_PULLOFF;
+  settings.z_zero_gauge = DEFAULT_Z_GAUGE;
+  settings.z_scale = DEFAULT_Z_SCALE;
   settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME;
   settings.decimal_places = DEFAULT_DECIMAL_PLACES;
   settings.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
@@ -195,6 +198,9 @@ uint8_t settings_store_global_setting(int parameter, float value) {
     case 20: settings.homing_seek_rate = value; break;
     case 21: settings.homing_debounce_delay = round(value); break;
     case 22: settings.homing_pulloff = value; break;
+    case 23: settings.z_zero_pulloff = value; break;
+    case 24: settings.z_zero_gauge = value; break;
+    case 25: settings.z_scale = value; break;
     default: 
       return(STATUS_INVALID_STATEMENT);
   }

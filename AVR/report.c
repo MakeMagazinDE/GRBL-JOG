@@ -153,7 +153,7 @@ void report_grbl_settings() {
   printPgmString(PSTR(" (step pulse, usec)\r\n$4=")); printFloat(settings.default_feed_rate);
   printPgmString(PSTR(" (default feed, mm/min)\r\n$5=")); printFloat(settings.default_seek_rate);
   printPgmString(PSTR(" (default seek, mm/min)\r\n$6=")); printInteger(settings.invert_mask); 
-  printPgmString(PSTR(" (step port invert mask, int:")); print_uint8_base2(settings.invert_mask);  
+  printPgmString(PSTR(" (step port invert mask, int %")); print_uint8_base2(settings.invert_mask);  
   printPgmString(PSTR(")\r\n$7=")); printInteger(settings.stepper_idle_lock_time);
   printPgmString(PSTR(" (step idle delay, msec)\r\n$8=")); printFloat(settings.acceleration/(60*60)); // Convert from mm/min^2 for human readability
   printPgmString(PSTR(" (acceleration, mm/sec^2)\r\n$9=")); printFloat(settings.junction_deviation);
@@ -166,12 +166,20 @@ void report_grbl_settings() {
   printPgmString(PSTR(" (invert step enable, bool)\r\n$16=")); printInteger(bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE));
   printPgmString(PSTR(" (hard limits, bool)\r\n$17=")); printInteger(bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE));
   printPgmString(PSTR(" (homing cycle, bool)\r\n$18=")); printInteger(settings.homing_dir_mask);
-  printPgmString(PSTR(" (homing dir invert mask, int:")); print_uint8_base2(settings.homing_dir_mask);  
+  printPgmString(PSTR(" (homing dir invert mask, int %")); print_uint8_base2(settings.homing_dir_mask);  
   printPgmString(PSTR(")\r\n$19=")); printFloat(settings.homing_feed_rate);
   printPgmString(PSTR(" (homing feed, mm/min)\r\n$20=")); printFloat(settings.homing_seek_rate);
-  printPgmString(PSTR(" (homing seek, mm/min)\r\n$21=")); printInteger(settings.homing_debounce_delay);
-  printPgmString(PSTR(" (homing debounce, msec)\r\n$22=")); printFloat(settings.homing_pulloff);
-  printPgmString(PSTR(" (homing pull-off, mm)\r\n")); 
+  printPgmString(PSTR(" (homing seek, mm/min)\r\n$21=")); 
+  printInteger(settings.homing_debounce_delay);
+  printPgmString(PSTR(" (homing debounce, msec)\r\n$22=")); 
+  printFloat(settings.homing_pulloff);
+  printPgmString(PSTR(" (homing pull-off, mm)\r\n$23=")); 
+  printFloat(settings.z_zero_pulloff);
+  printPgmString(PSTR(" (Z zero pull-off, mm)\r\n$24=")); 
+  printFloat(settings.z_zero_gauge);
+  printPgmString(PSTR(" (Z zero gauge, mm)\r\n$25=")); 
+  printFloat(settings.z_scale);
+  printPgmString(PSTR(" (Z scaling to reduce feed)\r\n")); 
 }
 
 
@@ -314,7 +322,7 @@ void report_realtime_status()
   for (i=0; i<= 2; i++) {
     print_position[i] = current_position[i]/settings.steps_per_mm[i];
     if (i==2) {
-    	print_position[i] = print_position[i]/DEFAULT_Z_SCALE;
+    	print_position[i] = print_position[i]/settings.z_scale;
     }
     if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
     printFloat(print_position[i]);
@@ -326,14 +334,14 @@ void report_realtime_status()
   for (i=0; i<= 2; i++) {
     if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
 	    if (i==2) {
-	      print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM/DEFAULT_Z_SCALE;
+	      print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM/settings.z_scale;
 	    }
 	    else {
 	      print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
 	    }
     } else {
 	    if (i==2) {
-	    	print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])/DEFAULT_Z_SCALE;
+	    	print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])/settings.z_scale;
 	    }
 	    else {
 	    	print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i]);
