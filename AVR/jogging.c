@@ -30,6 +30,7 @@
 #include "protocol.h"
 #include "limits.h"
 #include "jogging.h"
+#include "serial.h"
 #include "report.h"
 #include <avr/pgmspace.h>
 #include "report.h"
@@ -65,22 +66,6 @@ void jog_init() {
 
 #ifdef JOG_SPI_PRESENT
 // TODO: send SPI on /SS request. Dummy data for now, does not work
-
-  void spi_transmit(uint8_t SPI_data) {
-    /* Start transmission */
-    SPDR = SPI_data;
-    /* Wait for transmission complete */
-    while(!(SPSR & (1<<SPIF)));
-  }
-  
-  void send_spi_position(uint8_t axis_idx) {
-    JOG_SPI_PORT &= ~(1<<JOG_SPI_SS); // Slave select active low
-    spi_transmit(axis_idx); // TEST DATA
-    spi_transmit(255);
-    spi_transmit(85);
-    spi_transmit(0);
-    JOG_SPI_PORT |= (1<<JOG_SPI_SS);
-  }
 #endif
 
 void jog_btn_release() {
@@ -110,6 +95,7 @@ void jogging()
   uint8_t i, limit_state, spindle_bits;
   
   uint32_t dest_step_rate, step_rate, step_delay; // Step delay after pulse 
+  float work_position, mm_per_step, mm_per_step_z;
 
   switch (sys.state) {
     case STATE_CYCLE: case STATE_HOMING: case STATE_INIT:
@@ -121,7 +107,8 @@ void jogging()
       LED_PORT |= (1<<LED_ERROR_BIT);                 
   }
   last_sys_state = sys.state;
-  
+
+
   spindle_bits = (~PINOUT_PIN) & (1<<PIN_SPIN_TOGGLE); // active low          
   if (spindle_bits) {
     if (spindle_status) {
@@ -209,7 +196,7 @@ void jogging()
   if (jog_bits & (1<<JOGREV_Z_BIT)) { // Z reverse switch on
     out_bits0 ^= (1<<Z_DIRECTION_BIT);
     out_bits = out_bits0 ^ (1<<Z_STEP_BIT);
-    reverse_flag = 1;
+    // reverse_flag = 1; // positive Z dir!
     jog_select = 2;
   } 
   
@@ -223,6 +210,7 @@ void jogging()
   }                                                            
   if (jog_bits & (1<<JOGFWD_Z_BIT)) { // Z forward switch on
     out_bits = out_bits0 ^ (1<<Z_STEP_BIT);
+    reverse_flag = 1; // positive Z dir!
     jog_select = 2;
   } 
 
@@ -241,6 +229,17 @@ void jogging()
   delay_us(10);
   jog_bits_old = jog_bits;
   i = 0;  // now index for sending position data 
+  
+  // Report machine position; note Z scaling
+  if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
+    mm_per_step = 1/(settings.steps_per_mm[jog_select] * INCH_PER_MM);
+    mm_per_step_z = 1/(settings.steps_per_mm[jog_select] * INCH_PER_MM * settings.z_scale);
+  } else {
+    mm_per_step = 1/settings.steps_per_mm[jog_select];
+    mm_per_step_z = 1/(settings.steps_per_mm[jog_select] * settings.z_scale);
+  }  
+  
+  work_position = print_position[jog_select];
   
   for(;;) { // repeat until button/joystick released  
 //    report_realtime_status(); // benötigt viel Zeit!
@@ -278,34 +277,62 @@ void jogging()
       st_go_idle(); 
       sys.state = last_sys_state;
       sys_sync_current_position();
+      if (jog_exit) {
+        report_realtime_status();
+      }
       return; 
     }
     
-    // update position registers
-    if (reverse_flag) {
-      sys.position[jog_select]--;
-    } 
-    else {
-      sys.position[jog_select]++; 
-    }
+
     ADCSRA = ADCSRA_init | (1<<ADSC); //0xC3; start ADC conversion
     // Both direction and step pins appropriately inverted and set. Perform one step
     STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | (out_bits & STEPPING_MASK);
-    delay_us(settings.pulse_microseconds);
-    STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | (out_bits0 & STEPPING_MASK);
+    delay_us(settings.pulse_microseconds/2);
     step_delay = (1000000/step_rate) - settings.pulse_microseconds - 100; // 100 = fester Wert für Schleifenzeit
+    STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | (out_bits0 & STEPPING_MASK);
   
-    if (sys.execute & EXEC_STATUS_REPORT) { // status report requested, print short msg only
-      printPgmString(PSTR("Jog\r\n"));
+    // update position registers, Q&D Z fix!
+  	if (jog_select==2) {
+      if (reverse_flag) {
+        sys.position[2]++;                // sys.position ist in Steps!
+        work_position += mm_per_step_z;    // relative print_position in mm since last report
+      } 
+      else {
+        sys.position[2]--; 
+        work_position -= mm_per_step_z;    // relative print_position in mm since last report
+      }
+ 	  }
+    else {
+      if (reverse_flag) {
+        sys.position[jog_select]--;       // sys.position ist in Steps!
+        work_position -= mm_per_step;
+      } 
+      else {
+        sys.position[jog_select]++; 
+        work_position += mm_per_step;    // relative print_position in mm since last report
+      }
+    }
+    
+    if (sys.execute & EXEC_STATUS_REPORT) {
+      if (step_delay > 250) {
+        // status report requested, print short msg only
+        printPgmString(PSTR("Jog"));
+        serial_write(88 + jog_select); // 88 = X + 1 = Y etc.
+        serial_write(44);
+        printFloat(work_position);
+        serial_write(13);
+        serial_write(10);
+
+        step_delay -= 250;
+      } 
+      else 
+      { 
+        printPgmString(PSTR("JogF\r\n"));
+      }
       sys.execute = 0;
     }
-    delay_us(step_delay);
     
-#ifdef JOG_SPI_PRESENT
-    send_spi_position(i); // bei jedem Durchlauf nur eine Achse übertragen
-    i++;
-    if (i>2) {i=0;}
-#endif 
+    delay_us(step_delay);
       
     while (!(ADCSRA && (1<<ADIF))) {} // warte ggf. bis ADIF-Bit gesetzt  
     ADCSRA = ADCSRA_init;     // exit conversion

@@ -65,7 +65,7 @@
   #define LIMIT_PORT        PORTB
   #define X_LIMIT_BIT       1  // DSUB Pin 11
   #define Y_LIMIT_BIT       2  // DSUB Pin 12
-  #define Z_LIMIT_BIT       3  // DSUB Pin 13
+  #define Z_LIMIT_BIT       3  // DSUB Pin 13 // Anmerkung: Hier bei POSITIVEN Z-Werten!
   #define LIMIT_INT         PCIE1  // Pin change interrupt enable pin
   #define LIMIT_INT_vect    PCINT1_vect 
   #define LIMIT_PCMSK       PCMSK1 // Pin change interrupt register

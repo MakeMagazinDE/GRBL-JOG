@@ -48,6 +48,9 @@
 #define MESSAGE_ENABLED 4
 #define MESSAGE_DISABLED 5
 
+// last reported work position
+float print_position[3];
+
 // Prints system status messages.
 void report_status_message(uint8_t status_code);
 

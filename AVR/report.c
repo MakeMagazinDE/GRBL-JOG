@@ -302,7 +302,6 @@ void report_realtime_status()
   uint8_t i;
   int32_t current_position[3]; // Copy current state of the system position variable
   memcpy(current_position,sys.position,sizeof(sys.position));
-  float print_position[3];
  
   // Report current machine state
   switch (sys.state) {

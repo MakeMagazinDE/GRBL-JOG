@@ -179,7 +179,6 @@
 #define LIMIT_SWITCHES_ACTIVE_HIGH
 
 // ---------------------------------------------------------------------------------------
-
 // TODO: Install compile-time option to send numeric status codes rather than strings.
 
 #endif
