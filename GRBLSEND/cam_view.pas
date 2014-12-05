@@ -108,7 +108,7 @@ var
   form_visible: boolean;
 
 begin
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     Top:= grbl_ini.ReadInteger('CamForm','Top',110);
     Left:= grbl_ini.ReadInteger('CamForm','Left',110);
@@ -158,7 +158,7 @@ procedure TForm3.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   grbl_ini:TRegistryIniFile;
 begin
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     grbl_ini.WriteInteger('CamForm','Top',Top);
     grbl_ini.WriteInteger('CamForm','Left',Left);

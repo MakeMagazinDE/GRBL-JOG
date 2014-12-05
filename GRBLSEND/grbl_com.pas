@@ -72,8 +72,10 @@ type
   procedure grbl_millXYZ(x, y, z: Double);
 
   // kompletten einzelnen Pfad fräsen, zurück bis Anfang wenn Closed
-  // Loch bohren wenn Path nur aus einem Eintrag besteht
   procedure grbl_millpath(millpath: TPath; millpen: Integer; offset: TIntPoint; is_closedpoly: Boolean);
+
+  // kompletten Pfad bohren, ggf. wiederholen bis z_end erreicht
+  procedure grbl_drillpath(millpath: TPath; millpen: Integer; offset: TIntPoint);
 
 var
 //FTDI-Device
@@ -385,11 +387,47 @@ begin
 end;
 
 
+procedure grbl_drillpath(millpath: TPath; millpen: Integer; offset: TIntPoint);
+// kompletten Pfad bohren, ggf. wiederholen bis z_end erreicht
+var i, my_len: Integer;
+  x, y: Double;
+  z, my_z_end: Double;
+
+  begin
+  my_len:= length(millpath);
+  if my_len < 1 then
+    exit;
+
+  x:= (millpath[0].x + offset.x) / c_hpgl_scale;
+  y:= (millpath[0].y + offset.y) / c_hpgl_scale;
+  grbl_moveXY(x,y, false);
+
+  my_z_end:= -job.pens[millpen].z_end; // Endtiefe
+  for i:= 1 to my_len - 1 do begin
+    if CancelProc then
+      break;
+    grbl_moveZ(job.z_penup, false);
+    x:= (millpath[i].x + offset.x) / c_hpgl_scale;
+    y:= (millpath[i].y + offset.y) / c_hpgl_scale;
+    grbl_moveXY(x,y,false);
+    z:= 0;
+    repeat
+      grbl_moveZ(0, false);
+      z:= z - job.pens[millpen].z_inc;
+      if z < my_z_end then
+        z:= my_z_end;
+      grbl_millZF(z, job.pens[millpen].speed);
+    until (z <= my_z_end) or CancelProc;
+  end;
+  grbl_moveZ(job.z_penlift, false);
+end;
+
+
 procedure grbl_millpath(millpath: TPath; millpen: Integer; offset: TIntPoint; is_closedpoly: Boolean);
 // kompletten Pfad fräsen, ggf. wiederholen bis z_end erreicht
 var i, my_len: Integer;
   x, y: Double;
-  my_z, my_z_limit, my_z_end: Double;
+  z, my_z_limit, my_z_end: Double;
 
   begin
   my_len:= length(millpath);
@@ -397,13 +435,12 @@ var i, my_len: Integer;
     exit;
 
   my_z_limit:= 0;
-  my_z_end:= job.pens[millpen].z_end;
-
+  my_z_end:= -job.pens[millpen].z_end; // Endtiefe
   repeat
     my_z_limit:= my_z_limit - job.pens[millpen].z_inc;
-    my_z:= -job.pens[millpen].z_end;
-    if my_z < my_z_limit then
-      my_z:= my_z_limit;
+    z:= -job.pens[millpen].z_end;
+    if z < my_z_limit then
+      z:= my_z_limit;
 
     if CancelProc then
       break;
@@ -412,7 +449,7 @@ var i, my_len: Integer;
     y:= (millpath[0].y + offset.y) / c_hpgl_scale;
     grbl_moveXY(x,y, false);
     grbl_moveZ(0, false);
-    grbl_millZF(my_z, job.pens[millpen].speed);
+    grbl_millZF(z, job.pens[millpen].speed);
     for i:= 1 to my_len - 1 do begin
       if CancelProc then
         break;
@@ -426,8 +463,7 @@ var i, my_len: Integer;
       grbl_millXY(x,y);
     end;
   until (my_z_limit <= my_z_end) or CancelProc;
-
-  grbl_moveZ(job.z_penup, false);
+  grbl_moveZ(job.z_penlift, false);
 end;
 
 

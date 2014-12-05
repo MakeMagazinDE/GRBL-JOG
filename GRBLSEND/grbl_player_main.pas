@@ -108,6 +108,8 @@ type
     Show3DPreview1: TMenuItem;
     ShowSpindleCam1: TMenuItem;
     AppDefaults: TStringGrid;
+    MemoComment: TMemo;
+    Label3: TLabel;
     procedure StringGridPensMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure PageControl1Change(Sender: TObject);
@@ -537,6 +539,8 @@ begin
       my_row:= 0;
       for i := s to sl.Count-1 do begin
         inc(my_row);
+        if sl.strings[i]='#End' then
+          break;
         if sl.strings[i]='#Pens' then
           break;
         Form1.StringGridFiles.Rows[my_row].DelimitedText:= sl.Strings[i];
@@ -545,6 +549,8 @@ begin
       my_row:= 0;
       for i := s to sl.Count-1 do begin
         inc(my_row);
+        if sl.strings[i]='#End' then
+          break;
         if sl.strings[i]='#Defaults' then
           break;
         Form1.StringGridPens.Rows[my_row].DelimitedText:= sl.Strings[i];
@@ -553,6 +559,8 @@ begin
       my_row:= 0;
       for i := s to sl.Count-1 do begin
         inc(my_row);
+        if sl.strings[i]='#End' then
+          break;
         if sl.strings[i]='#Blocks' then
           break;
         Form1.Appdefaults.Rowcount:= my_row+1;
@@ -563,12 +571,13 @@ begin
       PenGridListToJob;
       DefaultsGridListToJob;
       OpenFilesInGrid;
-
       s:=i+1;
       my_row:= 1;
       my_len:= length(final_array);
       for i := s to sl.Count-1 do begin
         if sl.strings[i]='#End' then
+          break;
+        if sl.strings[i]='#Comment' then
           break;
         if my_row <= my_len then begin
           Form1.StringGridBlocks.Rowcount:= my_row+1;
@@ -579,6 +588,13 @@ begin
           final_array[my_row-1].enable:= Form1.StringGridBlocks.Cells[2,my_row] = 'ON';
         end;
         inc(my_row);
+      end;
+      s:=i+1;
+      Form1.MemoComment.Clear;
+      for i := s to sl.Count-1 do begin
+        if sl.strings[i]='#End' then
+          break;
+        Form1.MemoComment.Lines.Add(sl.Strings[i]);
       end;
     end;
   end;
@@ -620,6 +636,10 @@ begin
     for i:= 1 to Form1.StringGridBlocks.Rowcount - 1 do
       if Form1.StringGridBlocks.Cells[0,i] <> '' then
         sl.Add(Form1.StringGridBlocks.Rows[i].CommaText);
+  sl.Add('#Comment');
+  if Form1.MemoComment.Lines.Count > 0 then
+    for i:= 0 to Form1.MemoComment.Lines.Count - 1 do
+      sl.Add(Form1.MemoComment.Lines.Strings[i]);
   sl.Add('#End');
   sl.SaveToFile(JobSettingsPath);
   sl.Free;
@@ -635,9 +655,14 @@ begin
 end;
 
 procedure TForm1.JobSaveAsExecute(Sender: TObject);
+var
+  my_ext: String;
 begin
   if SaveJobDialog.Execute then begin
     JobSettingsPath := SaveJobDialog.Filename;
+    my_ext:= AnsiUpperCase(ExtractFileExt(JobSettingsPath));
+    if my_ext <> '.JOB' then
+        JobSettingsPath:= JobSettingsPath + '.job';
     Form1.Caption:= c_ProgNameStr + '[' + JobSettingsPath + ']';
     SaveJob;
   end;
@@ -884,16 +909,16 @@ begin
 
   UnHilite;
   // Form3.FormCreate(nil);
-  Caption := 'GRBL Player';
+  Caption := 'GRBLize';
   BtnRescan.Visible:= true;
   BtnClose.Visible:= false;
   JobSettingsPath:=ExtractFilePath(Application.ExeName)+'default.job';
   Form1.Show;
-  grbl_ini:= TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:= TRegistryIniFile.Create('GRBLize');
   try
     Top:= grbl_ini.ReadInteger('MainForm','Top',150);
     Left:= grbl_ini.ReadInteger('MainForm','Left',200);
-    JobSettingsPath:= grbl_ini.ReadString('Settings','Path','');
+    JobSettingsPath:= grbl_ini.ReadString('Settings','Path',JobSettingsPath);
     ftdi_selected_device:= grbl_ini.ReadInteger('Settings','Device',-1);
 
     WindowMenu1.Items[0].Checked:= grbl_ini.ReadBool('DrawingForm','Visible',true);
@@ -972,14 +997,14 @@ var
   grbl_ini:TRegistryIniFile;
 begin
   grbl_available:= false;
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     grbl_ini.WriteInteger('MainForm','Top',Top);
     grbl_ini.WriteInteger('MainForm','Left',Left);
     grbl_ini.WriteString('Settings','Path',JobSettingsPath);
-    grbl_ini.WriteBool('Settings','DrawingWindow',WindowMenu1.Items[0].Checked);
-    grbl_ini.WriteBool('Settings','PreviewWindow',WindowMenu1.Items[1].Checked);
-    grbl_ini.WriteBool('Settings','CamWindow',WindowMenu1.Items[2].Checked);
+    grbl_ini.WriteBool('DrawingForm','Visible',Form1.WindowMenu1.Items[0].Checked);
+    grbl_ini.WriteBool('CamForm','Visible',Form1.WindowMenu1.Items[1].Checked);
+    grbl_ini.WriteBool('SceneForm','Visible',Form1.WindowMenu1.Items[2].Checked);
     if ftdi_isopen then
       grbl_ini.WriteInteger('Settings','Device', ftdi_selected_device)
     else
@@ -1586,7 +1611,7 @@ begin
   end else if (aRow < 7) and (aCol = 0) then with AppDefaults,Canvas do begin
     Font.Color := clred;
     TextRect(Rect, Rect.Left + 2, Rect.Top + 2, aStr);
-  end else if (aCol = 1) and (aStr[1]= 'O') then // ON, OFF
+  end else if (aCol = 1) and ((aStr= 'ON') or (aStr= 'OFF')) then // ON, OFF
     with AppDefaults,Canvas do begin
       FrameRect(Rect);
       inc(Rect.Left);
@@ -1797,11 +1822,15 @@ begin
     grbl_millXYF(0,0,399);
     last_pen:= my_entry.pen;
     for p:= 0  to length(my_entry.millings)-1 do begin
-      grbl_millpath(my_entry.millings[p], my_entry.pen, job.pens[my_entry.pen].offset, my_entry.closed);
+      if my_entry.shape = drillhole then
+        grbl_drillpath(my_entry.millings[p], my_entry.pen, job.pens[my_entry.pen].offset)
+      else
+        grbl_millpath(my_entry.millings[p], my_entry.pen, job.pens[my_entry.pen].offset, my_entry.closed);
       if CancelProc then begin
         break;
       end;
     end;
+
   end;
   grbl_addStr('M5');
   if not CancelProc then

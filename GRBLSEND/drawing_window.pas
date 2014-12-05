@@ -833,7 +833,7 @@ var
   form_visible: boolean;
 begin
   ToolCursorBlock:= -1;
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     Top:= grbl_ini.ReadInteger('DrawingForm','Top',130);
     Left:= grbl_ini.ReadInteger('DrawingForm','Left',130);
@@ -860,7 +860,7 @@ procedure TForm2.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   grbl_ini:TRegistryIniFile;
 begin
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     grbl_ini.WriteInteger('DrawingForm','Top',Top);
     grbl_ini.WriteInteger('DrawingForm','Left',Left);

@@ -64,7 +64,7 @@ var
   grbl_ini:TRegistryIniFile;
   form_visible: boolean;
 begin
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     Top:= grbl_ini.ReadInteger('SceneForm','Top',110);
     Left:= grbl_ini.ReadInteger('SceneForm','Left',110);
@@ -80,7 +80,7 @@ procedure TForm4.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   grbl_ini:TRegistryIniFile;
 begin
-  grbl_ini:=TRegistryIniFile.Create('GRBL_player');
+  grbl_ini:=TRegistryIniFile.Create('GRBLize');
   try
     grbl_ini.WriteInteger('SceneForm','Top',Top);
     grbl_ini.WriteInteger('SceneForm','Left',Left);
