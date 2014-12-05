@@ -1,4 +1,4 @@
-program GRBL_player;
+program GRBLize;
 
 {%File 'drill_import.inc'}
 {%File 'hpgl_import.inc'}
