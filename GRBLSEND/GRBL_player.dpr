@@ -32,7 +32,6 @@ begin
   Application.Initialize;
   Application.Title := 'GRBLize';
   Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(Tdeviceselectbox, deviceselectbox);
   Application.CreateForm(TAboutBox, AboutBox);
   Application.Run;
 end.

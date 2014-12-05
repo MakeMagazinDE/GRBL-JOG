@@ -32,7 +32,7 @@ object Form2: TForm2
     Top = 0
     Width = 1200
     Height = 800
-    Hint = 'Milling View - Drag with mouse or click block object'
+    Hint = 'Milling View - Drag with left-click or modify with right-click'
     Color = clCream
     DragCursor = crSizeAll
     ParentColor = False
@@ -139,7 +139,6 @@ object Form2: TForm2
     end
   end
   object PopupMenuObject: TPopupMenu
-    MenuAnimation = [maTopToBottom]
     Left = 1120
     Top = 8
     object pu_enable: TMenuItem
@@ -190,7 +189,7 @@ object Form2: TForm2
       Caption = 'Tool is above Object Center'
       GroupIndex = 2
       RadioItem = True
-      OnClick = pu_isatCenter
+      OnClick = pu_toolIsAtCenterClick
     end
     object pu_camIsAtCenter: TMenuItem
       Caption = 'Cam is above Object Center'
@@ -205,7 +204,7 @@ object Form2: TForm2
     object pu_moveCenter1: TMenuItem
       Caption = 'Move Tool to Object Center'
       GroupIndex = 2
-      OnClick = pu_moveCenter
+      OnClick = pu_moveToolToCenterClick
     end
     object pu_moveCamToCenter: TMenuItem
       Caption = 'Move Cam to Object Center'
@@ -220,13 +219,13 @@ object Form2: TForm2
       Caption = 'Tool is above Part Zero'
       GroupIndex = 3
       RadioItem = True
-      OnClick = pu_isAtZeroClick
+      OnClick = pu_toolisAtPartZeroClick
     end
     object pu_camIsAtZero2: TMenuItem
       Caption = 'Cam is above Part Zero'
       GroupIndex = 3
       RadioItem = True
-      OnClick = pu_camIsAtZero2Click
+      OnClick = pu_camIsAtPartZeroClick
     end
     object N5: TMenuItem
       Caption = '-'
@@ -236,17 +235,16 @@ object Form2: TForm2
       Caption = 'Move Tool to Part Zero'
       GroupIndex = 3
       RadioItem = True
-      OnClick = pu_moveZeroClick
+      OnClick = pu_moveToolToPartZeroClick
     end
     object pu_moveCamToZero2: TMenuItem
       Caption = 'Move Cam to Part Zero'
       GroupIndex = 3
       RadioItem = True
-      OnClick = pu_moveCamZeroClick
+      OnClick = pu_moveCamToPartZeroClick
     end
   end
   object PopupMenuPoint: TPopupMenu
-    MenuAnimation = [maTopToBottom]
     Left = 1120
     Top = 8
     object MenuItem1: TMenuItem
@@ -297,7 +295,7 @@ object Form2: TForm2
       Caption = 'Tool is above Point'
       GroupIndex = 2
       RadioItem = True
-      OnClick = pu_isatPtClick
+      OnClick = pu_toolisatpointClick
     end
     object MenuItem18: TMenuItem
       Caption = 'Cam is above Point'
@@ -312,7 +310,7 @@ object Form2: TForm2
     object MenuItem14: TMenuItem
       Caption = 'Move Tool to Point'
       GroupIndex = 2
-      OnClick = pu_moveZeroClick
+      OnClick = pu_moveToolToPointClick
     end
     object MenuItem22: TMenuItem
       Caption = 'Move Cam to Point'

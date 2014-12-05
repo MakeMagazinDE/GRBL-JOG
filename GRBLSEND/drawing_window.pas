@@ -61,12 +61,12 @@ type
     procedure pu_camIsAtCenterClick(Sender: TObject);
     procedure pu_moveCamToPointClick(Sender: TObject);
     procedure pu_moveCamToCenterClick(Sender: TObject);
-    procedure pu_moveCamZeroClick(Sender: TObject);
-    procedure pu_camIsAtZero2Click(Sender: TObject);
-    procedure pu_isatCenter(Sender: TObject);
-    procedure pu_moveCenter(Sender: TObject);
-    procedure pu_isAtZeroClick(Sender: TObject);
-    procedure pu_moveZeroClick(Sender: TObject);
+    procedure pu_moveCamToPartZeroClick(Sender: TObject);
+    procedure pu_camIsAtPartZeroClick(Sender: TObject);
+    procedure pu_toolIsAtCenterClick(Sender: TObject);
+    procedure pu_moveToolToCenterClick(Sender: TObject);
+    procedure pu_toolisAtPartZeroClick(Sender: TObject);
+    procedure pu_moveToolToPartZeroClick(Sender: TObject);
     procedure BtnZoomResetClick(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -80,8 +80,8 @@ type
         Shift: TShiftState; X, Y: Integer);
     procedure pu_enableClick(Sender: TObject);
     procedure pu_radioClick(Sender: TObject);
-    procedure pu_move2PtClick(Sender: TObject);
-    procedure pu_isatPtClick(Sender: TObject);
+    procedure pu_moveToolToPointClick(Sender: TObject);
+    procedure pu_toolisatpointClick(Sender: TObject);
     procedure CheckBoxDirectionsClick(Sender: TObject);
     procedure CheckBoxDimensionsClick(Sender: TObject);
     procedure ScrollBarChange(Sender: TObject);
@@ -919,29 +919,30 @@ begin
     SetCursor(Screen.Cursors[crSize]);
     mouse_start.x:= X;
     mouse_start.y:= Y;
+    draw_cnc_all;
+    exit;
   end;
-
-  search_entry_in_drawing(x,y);
-  draw_cnc_all;
-
-  pt.x := X + 15;
-  pt.y := Y - 10;
-  pt := DrawingBox.ClientToScreen(pt);
-  if (ssRight in Shift) and (HiliteBlock >= 0) then begin
-    uncheck_Popups;
-    PopupMenuPoint.Items[0].Checked:= final_array[HiliteBlock].enable;
-    PopupMenuPoint.Items[ord(final_array[HiliteBlock].shape)+2].Checked:= true;
-    PopupMenuObject.Items[0].Checked:= final_array[HiliteBlock].enable;
-    PopupMenuObject.Items[ord(final_array[HiliteBlock].shape)+2].Checked:= true;
-    if HilitePoint >= 0 then
-      PopupMenuPoint.Popup(pt.X, pt.Y)
-    else
-      PopupMenuObject.Popup(pt.X, pt.Y);
+  if (ssRight in Shift) then begin
+    grbl_available:= false; // sonst funktioniert Popup Auto Close nicht richtig!
+    search_entry_in_drawing(x,y);
+    draw_cnc_all;
+    pt.x := X + 15;
+    pt.y := Y - 10;
+    pt := DrawingBox.ClientToScreen(pt);
+    if (HiliteBlock >= 0) then begin
+      uncheck_Popups;
+      PopupMenuPoint.Items[0].Checked:= final_array[HiliteBlock].enable;
+      PopupMenuPoint.Items[ord(final_array[HiliteBlock].shape)+2].Checked:= true;
+      PopupMenuObject.Items[0].Checked:= final_array[HiliteBlock].enable;
+      PopupMenuObject.Items[ord(final_array[HiliteBlock].shape)+2].Checked:= true;
+      if HilitePoint >= 0 then
+        PopupMenuPoint.Popup(pt.X, pt.Y)
+      else
+        PopupMenuObject.Popup(pt.X, pt.Y);
+    end else
+      PopupMenuPart.Popup(pt.X, pt.Y);
+    grbl_wait_timer_finished; // sonst funktioniert Popup Auto Close nicht richtig!
   end;
-  if (ssRight in Shift) and (HiliteBlock < 0) then begin
-    PopupMenuPart.Popup(pt.X, pt.Y);
-  end;
-  TrackBarZoom.SetFocus;
 end;
 
 procedure TForm2.DrawingBoxMouseUp(Sender: TObject; Button: TMouseButton;
@@ -1044,7 +1045,7 @@ end;
 
 // #############################################################################
 
-procedure TForm2.pu_isAtZeroClick(Sender: TObject);
+procedure TForm2.pu_toolisAtPartZeroClick(Sender: TObject);
 begin
   ToolCursor.X:= 0;
   ToolCursor.Y:= 0;
@@ -1054,7 +1055,7 @@ begin
   ToolCursorBlock:= HiliteBlock;
 end;
 
-procedure TForm2.pu_isatPtClick(Sender: TObject);
+procedure TForm2.pu_toolisatpointClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_to_toolcursor;
@@ -1066,7 +1067,7 @@ begin
   ToolCursorBlock:= HiliteBlock;
 end;
 
-procedure TForm2.pu_isatCenter(Sender: TObject);
+procedure TForm2.pu_toolIsAtCenterClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_center_to_toolcursor;
@@ -1080,7 +1081,7 @@ end;
 
 // #############################################################################
 
-procedure TForm2.pu_camIsAtZero2Click(Sender: TObject);
+procedure TForm2.pu_camIsAtPartZeroClick(Sender: TObject);
 begin
   grbl_offsXY(-job.cam_x, -job.cam_y);
   NeedsRedraw:= true;
@@ -1120,7 +1121,7 @@ end;
 
 // #############################################################################
 
-procedure TForm2.pu_moveZeroClick(Sender: TObject);
+procedure TForm2.pu_moveToolToPartZeroClick(Sender: TObject);
 begin
   ToolCursor.X:= 0;
   ToolCursor.Y:= 0;
@@ -1130,7 +1131,7 @@ begin
   NeedsRefresh3D:= true;
 end;
 
-procedure TForm2.pu_move2PtClick(Sender: TObject);
+procedure TForm2.pu_moveToolToPointClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_to_toolcursor;
@@ -1143,7 +1144,7 @@ begin
   NeedsRefresh3D:= true;
 end;
 
-procedure TForm2.pu_moveCenter(Sender: TObject);
+procedure TForm2.pu_moveToolToCenterClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_center_to_toolcursor;
@@ -1158,7 +1159,7 @@ end;
 
 // #############################################################################
 
-procedure TForm2.pu_moveCamZeroClick(Sender: TObject);
+procedure TForm2.pu_moveCamToPartZeroClick(Sender: TObject);
 begin
   grbl_moveZ(job.z_penlift, false);
   grbl_moveXY(-job.cam_x,-job.cam_y, false);

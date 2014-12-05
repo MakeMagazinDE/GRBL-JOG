@@ -16,16 +16,24 @@ type
   function InitFTDI(my_device:Integer): String;
   function CheckCom(my_ComNumber: Integer): Integer;  // check if a COM port is available
 
+  // Warte, bis Timer1-Routine beendet
+  procedure grbl_wait_timer_finished;
+
   // GCode-String oder Char an GRBL senden, auf OK warten wenn my_getok = TRUE
   function grbl_sendStr(my_str: String; ProcMsg, my_getok: boolean): String;
 
+  // GCode-String oder Char an GRBL senden, auf OK warten und Antwort in Memo-Feld eintragen
+  procedure grbl_addStr(my_str: String);
+
   // GCode-String von GRBL holen, ggf. Timeout-Zeit warten:
   // ggf. Application.ProcessMessages w‰hrend Warten ausf¸hren
-  function grbl_receiveStr(my_timeout: Integer; ProcMsg: Boolean): string;
+  function grbl_receiveStr(timeout: Integer; ProcMsg: Boolean): string;
 
   // gibt Anzahl der Zeichen im Empfangspuffer zur¸ck:
   function grbl_receiveCount: Integer;
 
+  // leert Empfangspuffer:
+  procedure grbl_rx_clear;
 
   // GCode-String G92 x,y mit abschlieﬂendem CR an GRBL senden, auf OK warten:
   procedure grbl_offsXY(x, y: Double);
@@ -78,7 +86,7 @@ var
   ftdi_sernum_arr, ftdi_desc_arr: Array[0..15] of ShortString;
   grbl_oldx, grbl_oldy, grbl_oldz: Double;
   grbl_oldf: Integer;
-  grbl_sendlist: TSTringList;
+  grbl_receveivelist: TSTringList;
 
 implementation
 
@@ -90,7 +98,7 @@ var
   targettime: cardinal;
 begin
   targettime := GetTickCount + msecs;
-  while targettime > GetTickCount do
+  while targettime > GetTickCount do ;
     Application.ProcessMessages;
 end;
 
@@ -127,29 +135,47 @@ end;
 // #############################################################################
 // #############################################################################
 
+procedure grbl_wait_timer_finished;
+// Warte, bis Timer1-Routine beendet
+begin
+  TimerFinished:= false;
+  TimerCount1:= 0;
+  repeat
+    Application.ProcessMessages;
+  until TimerFinished;
+end;
+
 function grbl_receiveCount: Integer;
 // gibt Anzahl der Zeichen im Empfangspuffer zur¸ck
 var i: Integer;
 begin
   if ftdi_isopen then begin
+    i:= 0;
     ftdi.getReceiveQueueStatus(i);
     grbl_receiveCount:= i;
   end else
     grbl_receiveCount:= 0;
 end;
 
+procedure grbl_rx_clear;
+begin
+  if ftdi_isopen then
+    ftdi.purgeQueue(fReceiveQueue);
+end;
 
-function grbl_receiveStr(my_timeout: Integer; ProcMsg: Boolean): string;
+function grbl_receiveStr(timeout: Integer; ProcMsg: Boolean): string;
+// wartet unendlich, wenn timeout = 0
 var
   my_str: String;
   i: Integer;
   my_char: char;
   targettime: cardinal;
-
+  has_timeout: Boolean;
 begin
   if ftdi_isopen then begin
     my_str:= '';
-    targettime := GetTickCount + my_timeout;
+    has_timeout:= timeout > 0;
+    targettime := GetTickCount + timeout;
     repeat
       if ProcMsg then
         Application.ProcessMessages;
@@ -159,13 +185,13 @@ begin
         if my_char >= #32 then
           my_str:= my_str + my_char;
       end;
-    until (my_char= #13) or (GetTickCount > targettime);
-    if (GetTickCount > targettime) then
-      grbl_receiveStr:= '#Timeout'
-    else
-      grbl_receiveStr:= my_str;
+    until (my_char= #10) or ((GetTickCount > targettime) and has_timeout);
+    if has_timeout then
+      if (GetTickCount > targettime) then
+        my_str:= '#Timeout';
   end else
-    grbl_receiveStr:= '#Device not open';
+    my_str:= '#Device not open';
+  grbl_receiveStr:= my_str;
 end;
 
 
@@ -175,26 +201,38 @@ function grbl_sendStr(my_str: String; ProcMsg, my_getok: boolean): String;
 // GRBL-Steuerzeichen sein (?,!,~,CTRL-X)
 var
   i: longint;
-  my_char: char;
 
 begin
   grbl_sendStr:= '';
   if ftdi_isopen then begin
     ftdi.write(@my_str[1], length(my_str), i);
     if my_getok then begin
-      my_str:= '';
-      repeat
-        if ProcMsg then
-          Application.ProcessMessages;
-        i:= grbl_receiveCount;
-        if i > 0 then begin
-          ftdi.read(@my_char, 1, i);
-          if my_char >= #32 then
-            my_str:= my_str + my_char;
-        end;
-      until (my_char= #13);
-      grbl_sendStr:= my_str;
+      grbl_sendStr:= grbl_receiveStr(0, ProcMsg);
     end;
+  end;
+end;
+
+procedure grbl_addStr(my_str: String);
+// wartet auf Timer1-Ende, setzt grbl_available auf FALSE und
+// sendet dann my_str mit CR an GRBL.
+// Zeigt Befehl und Antwort in Memo1-Feld an.
+var
+  i: longint;
+  my_response: String;
+begin
+  LEDbusy.Checked:= true;
+  if ftdi_isopen then begin
+    grbl_available:= false;
+    grbl_wait_timer_finished;  // wartet auf Timer1-Ende
+    grbl_rx_clear;
+    my_response:= grbl_sendStr(my_str + #13, true, true);
+    Form1.Memo1.lines.add(my_str + '; ' + my_response);
+    grbl_available:= true;
+  end else begin
+    grbl_available:= false;
+    grbl_wait_timer_finished;  // wartet auf Timer1-Ende
+    Form1.Memo1.lines.add(my_str + '; #Device not open');
+    grbl_available:= true;
   end;
 end;
 
@@ -215,20 +253,19 @@ end;
 procedure grbl_offsXY(x, y: Double);
 // GCode-String G92 x,y mit abschlieﬂendem CR an GRBL senden, auf OK warten
 begin
-  grbl_sendlist.add('G92 X'+ FloatToSTrDot(x)+' Y'+ FloatToSTrDot(y));
+  grbl_addStr('G92 X'+ FloatToSTrDot(x)+' Y'+ FloatToSTrDot(y));
 end;
 
 procedure grbl_offsZ(z: Double);
 // GCode-String G92 z mit abschlieﬂendem CR an GRBL senden, auf OK warten
 begin
-  grbl_sendlist.add('G92 Z'+ FloatToSTrDot(z));
+  grbl_addStr('G92 Z'+ FloatToSTrDot(z));
 end;
 
 procedure grbl_moveXY(x, y: Double; is_abs: Boolean);
 // GCode-String G0 x,y mit abschlieﬂendem CR an GRBL senden, auf OK warten
 var my_str: String;
 begin
-
   if is_abs then
     my_str:= 'G53 X'
   else begin
@@ -238,7 +275,7 @@ begin
     grbl_oldy:= y;
   end;
   my_str:= my_str + FloatToSTrDot(x) + ' Y' + FloatToSTrDot(y);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
 end;
 
 procedure grbl_moveZ(z: Double; is_abs: Boolean);
@@ -253,7 +290,7 @@ begin
     grbl_oldz:= z;
   end;
   my_str:= my_str + FloatToSTrDot(z);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
 end;
 
 procedure grbl_millXYF(x, y: Double; f: Integer);
@@ -265,7 +302,7 @@ begin
   my_str:= 'G1 X'+ FloatToSTrDot(x)+' Y'+ FloatToSTrDot(y);
   if f <> grbl_oldf then
     my_str:= my_str + ' F' + IntToStr(f);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldf:= f;
   grbl_oldx:= x;
   grbl_oldy:= y;
@@ -282,7 +319,7 @@ begin
     my_str:= my_str + ' X'+ FloatToSTrDot(x);
   if y <> grbl_oldy then
     my_str:= my_str + ' Y'+ FloatToSTrDot(y);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldx:= x;
   grbl_oldy:= y;
 end;
@@ -295,7 +332,7 @@ begin
   grbl_checkZ(z);
   my_str:= 'G1 Z'+ FloatToSTrDot(z);
   my_str:= my_str + ' F' + IntToStr(f);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldf:= f;
   grbl_oldz:= z;
 end;
@@ -306,7 +343,7 @@ var my_str: String;
 begin
   grbl_checkZ(z);
   my_str:= 'G1 Z'+ FloatToSTrDot(z);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldz:= z;
 end;
 
@@ -320,7 +357,7 @@ begin
   my_str:= 'G1 X' + FloatToSTrDot(x) +' Y'+ FloatToSTrDot(y) +' Z' + FloatToSTrDot(z);
   if f <> grbl_oldf then
     my_str:= my_str + ' F' + IntToStr(f);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldf:= f;
   grbl_oldx:= x;
   grbl_oldy:= y;
@@ -341,7 +378,7 @@ begin
     my_str:= my_str + ' Y'+ FloatToSTrDot(y);
   if z <> grbl_oldz then
     my_str:= my_str + ' Z'+ FloatToSTrDot(z);
-  grbl_sendlist.add(my_str);
+  grbl_addStr(my_str);
   grbl_oldx:= x;
   grbl_oldy:= y;
   grbl_oldz:= z;
@@ -349,7 +386,7 @@ end;
 
 
 procedure grbl_millpath(millpath: TPath; millpen: Integer; offset: TIntPoint; is_closedpoly: Boolean);
-// kompletten Pfad fr‰sen oder bohren, ggf. wiederholen bis z_end erreicht
+// kompletten Pfad fr‰sen, ggf. wiederholen bis z_end erreicht
 var i, my_len: Integer;
   x, y: Double;
   my_z, my_z_limit, my_z_end: Double;
@@ -368,37 +405,24 @@ var i, my_len: Integer;
     if my_z < my_z_limit then
       my_z:= my_z_limit;
 
-    Application.ProcessMessages;
     if CancelProc then
       break;
-    if my_len = 1 then begin
-    // single point drill
-      x:= (millpath[0].x + offset.x) / 40;
-      y:= (millpath[0].y + offset.y) / 40;
-      grbl_moveZ(job.z_penup, false);
-      grbl_moveXY(x,y, false);
-      grbl_moveZ(0, false);
-      grbl_millZF(my_z, job.pens[millpen].speed);
-      grbl_moveZ(job.z_penup, false);
-      exit;
-    end;
     grbl_moveZ(job.z_penup, false);
-    x:= (millpath[0].x + offset.x) / 40;
-    y:= (millpath[0].y + offset.y) / 40;
+    x:= (millpath[0].x + offset.x) / c_hpgl_scale;
+    y:= (millpath[0].y + offset.y) / c_hpgl_scale;
     grbl_moveXY(x,y, false);
     grbl_moveZ(0, false);
     grbl_millZF(my_z, job.pens[millpen].speed);
     for i:= 1 to my_len - 1 do begin
-      Application.ProcessMessages;
       if CancelProc then
         break;
-      x:= (millpath[i].x + offset.x) / 40;
-      y:= (millpath[i].y + offset.y) / 40;
+      x:= (millpath[i].x + offset.x) / c_hpgl_scale;
+      y:= (millpath[i].y + offset.y) / c_hpgl_scale;
       grbl_millXY(x,y);
     end;
     if is_closedpoly and (not CancelProc) then begin
-      x:= (millpath[0].x + offset.x) / 40;
-      y:= (millpath[0].y + offset.y) / 40;
+      x:= (millpath[0].x + offset.x) / c_hpgl_scale;
+      y:= (millpath[0].y + offset.y) / c_hpgl_scale;
       grbl_millXY(x,y);
     end;
   until (my_z_limit <= my_z_end) or CancelProc;

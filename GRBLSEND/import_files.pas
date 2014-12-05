@@ -467,6 +467,7 @@ var
 begin
   my_len:= length(search_path);
   lastdv:= high(Integer);
+  temp_idx:= 0;
   for p:= 0 to my_len-1 do begin
     dx:= search_path[p].x;
     dy:= search_path[p].y;
