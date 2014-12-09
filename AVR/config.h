@@ -28,16 +28,168 @@
 #ifndef config_h
 #define config_h
 
+#define GRBL_VERSION "0.8c/jog.2"
+
 // Default settings. Used when resetting EEPROM. Change to desired name in defaults.h
 #define DEFAULTS_HACKSWOOD
+// #define DEFAULTS_HACKSALUM
 
 // Serial baud rate
 #define BAUD_RATE 19200
 
-// Default pin mappings. Grbl officially supports the Arduino Uno only. Other processor types
-// may exist from user-supplied templates or directly user-defined in pin_map.h
-// #define PIN_MAP_ARDUINO_UNO
-#define PIN_MAP_MEGA_644  // also change CPU in makefile!
+// NOTE: All step bit and direction pins must be on the same port.
+// Settings for Chinese Driver Board with Display (Board_2).
+#define STEPPING_DDR      DDRD
+#define STEPPING_PORT     PORTD
+#define X_STEP_BIT        6  // DSUB Pin 3
+#define Y_STEP_BIT        4  // DSUB Pin 5
+#define Z_STEP_BIT        2  // DSUB Pin 7
+#define X_DIRECTION_BIT   7  // DSUB Pin 2
+#define Y_DIRECTION_BIT   5  // DSUB Pin 4
+#define Z_DIRECTION_BIT   3  // DSUB Pin 6
+
+// Settings for newer Chinese Driver Boards (Board_3). Enable must be re-wired from D-Sub Pin 1 to Pin 16
+/*
+#define X_STEP_BIT        7  // DSUB Pin 3
+#define Y_STEP_BIT        5  // DSUB Pin 5
+#define Z_STEP_BIT        3  // DSUB Pin 7
+#define X_DIRECTION_BIT   6  // DSUB Pin 2
+#define Y_DIRECTION_BIT   4  // DSUB Pin 4
+#define Z_DIRECTION_BIT   2  // DSUB Pin 6
+*/
+
+#define STEPPERS_ENABLE_DDR    DDRB
+#define STEPPERS_ENABLE_PORT   PORTB
+#define STEPPERS_ENABLE_BIT    0  // DSUB Pin 1
+
+// NOTE: All limit bit pins must be on the same port
+#define LIMIT_DDR         DDRB
+#define LIMIT_PIN         PINB
+#define LIMIT_PORT        PORTB
+#define X_LIMIT_BIT       1  // DSUB Pin 11
+#define Y_LIMIT_BIT       2  // DSUB Pin 12
+#define Z_LIMIT_BIT       3  // DSUB Pin 13 // Anmerkung: Hier bei POSITIVEN Z-Werten!
+#define LIMIT_INT         PCIE1  // Pin change interrupt enable pin
+#define LIMIT_INT_vect    PCINT1_vect 
+#define LIMIT_PCMSK       PCMSK1 // Pin change interrupt register
+
+
+// EEPROM Default values
+#ifdef DEFAULTS_HACKSWOOD
+  // Grbl default settings for C'T HACKS WOODMILL. 
+  // Note Z scaling in gcode.c and report.c for different Z axis speed (well, its a kludge...)
+  #define DEFAULT_Z_SCALE 5.0  // Trick um für Z kleineren Vorschub zu erzwingen
+  #define DEFAULT_Z_GAUGE 10.0 // mm, Z Gauge Block Dicke
+  #define DEFAULT_Z_PULLOFF 0.0 // mm, auto pull back Z after pressing ZERO center btn
+  #define DEFAULT_X_STEPS_PER_MM 80.0
+  #define DEFAULT_Y_STEPS_PER_MM 80.0
+  #define DEFAULT_Z_STEPS_PER_MM 533.333/DEFAULT_Z_SCALE // note Z-scaling to reduce axis speed
+
+  #define DEFAULT_STEP_PULSE_MICROSECONDS 10
+  #define DEFAULT_MM_PER_ARC_SEGMENT 0.2
+  #define DEFAULT_RAPID_FEEDRATE 5000.0 // mm/min
+  #define DEFAULT_FEEDRATE 400.0
+  #define DEFAULT_ACCELERATION (200.0*60*60) // 200 mm/min^2
+  #define DEFAULT_JUNCTION_DEVIATION 0.1 // mm
+  #define DEFAULT_LIMIT_INVERT_MASK 0
+  #define DEFAULT_REPORT_INCHES 0 // false
+  #define DEFAULT_AUTO_START 1 // true
+  #define DEFAULT_INVERT_ST_ENABLE 0 // true
+  #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
+  #define DEFAULT_HOMING_ENABLE 1  // true
+  #define DEFAULT_HOMING_DIR_MASK ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)) // move negative dir
+  #define DEFAULT_HOMING_RAPID_FEEDRATE 1500.0 // mm/min
+  #define DEFAULT_HOMING_FEEDRATE 200.0 // mm/min
+  #define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
+  #define DEFAULT_HOMING_PULLOFF 5.0 // mm
+  #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+  #define DEFAULT_DECIMAL_PLACES 2
+  #define DEFAULT_N_ARC_CORRECTION 25
+#endif
+#ifdef DEFAULTS_HACKSALUM
+  // Grbl default settings for C'T HACKS ALUMINUM MILL. 
+  // No Z Scaling.
+  #define DEFAULT_Z_SCALE 1.0  // Trick um für Z kleineren Vorschub zu erzwingen
+  #define DEFAULT_Z_GAUGE 10.0 // mm, Z Gauge Block Dicke
+  #define DEFAULT_Z_PULLOFF 0.0 // mm, auto pull back Z after pressing ZERO center btn
+  #define DEFAULT_X_STEPS_PER_MM 266.66
+  #define DEFAULT_Y_STEPS_PER_MM 266.66
+  #define DEFAULT_Z_STEPS_PER_MM 266.66
+
+  #define DEFAULT_STEP_PULSE_MICROSECONDS 10
+  #define DEFAULT_MM_PER_ARC_SEGMENT 0.2
+  #define DEFAULT_RAPID_FEEDRATE 2500.0 // mm/min
+  #define DEFAULT_FEEDRATE 400.0
+  #define DEFAULT_ACCELERATION (150.0*60*60) // 200 mm/min^2
+  #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
+  #define DEFAULT_LIMIT_INVERT_MASK 14
+  #define DEFAULT_REPORT_INCHES 0 // false
+  #define DEFAULT_INVERT_ST_ENABLE 1 // true
+  #define DEFAULT_AUTO_START 1 // true
+  #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
+  #define DEFAULT_HOMING_ENABLE 1  // true
+  #define DEFAULT_HOMING_DIR_MASK ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)) // move negative dir on XY
+  #define DEFAULT_HOMING_RAPID_FEEDRATE 1500.0 // mm/min
+  #define DEFAULT_HOMING_FEEDRATE 200.0 // mm/min
+  #define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
+  #define DEFAULT_HOMING_PULLOFF 5.0 // mm
+  #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+  #define DEFAULT_DECIMAL_PLACES 2
+  #define DEFAULT_N_ARC_CORRECTION 25
+#endif
+
+
+// Increase Buffers to make use of extra SRAM
+#define RX_BUFFER_SIZE    128
+#define TX_BUFFER_SIZE    256
+#define BLOCK_BUFFER_SIZE 32
+#define LINE_BUFFER_SIZE  64
+
+#define SPINDLE_ENABLE_DDR   DDRC
+#define SPINDLE_ENABLE_PORT  PORTC
+#define SPINDLE_ENABLE_BIT   7  // DSUB Pin 14
+
+#define COOLANT_FLOOD_DDR   DDRC
+#define COOLANT_FLOOD_PORT  PORTC
+#define COOLANT_FLOOD_BIT   6  // DSUB Pin 16 (PWM)
+
+#define LED_PRESENT  // if defined, spindle direction and coolant mist may not be used
+#define LED_DDR   DDRC
+#define LED_PORT  PORTC
+//  #define LED_AUX_BIT 2
+#define LED_RUN_BIT   4   // LED 3
+#define LED_ERROR_BIT 5   // LED 2
+
+// NOTE: All pinouts pins must be on the same port
+#define PINOUT_DDR       DDRC
+#define PINOUT_PIN       PINC
+#define PINOUT_PORT      PORTC
+#define PIN_RESET        0
+#define PIN_FEED_HOLD    1
+#define PIN_CYCLE_START  2
+#define PIN_SPIN_TOGGLE  3
+#define PINOUT_INT       PCIE2  // Pin change interrupt enable pin
+#define PINOUT_INT_vect  PCINT2_vect
+#define PINOUT_PCMSK     PCMSK2 // Pin change interrupt register, without Spindle Button
+
+// Jog panel with speed pot and joystick switches by cm@ct.de
+
+#define JOGSW_DDR       DDRA
+#define JOGSW_PIN       PINA
+#define JOGSW_PORT      PORTA
+#define JOGSW_MASK      0x7F  // Bits 0..6 used
+#define JOGREV_X_BIT    0     // Switch input bits
+#define JOGFWD_X_BIT    1  
+#define JOGREV_Y_BIT    2
+#define JOGFWD_Y_BIT    3
+#define JOGREV_Z_BIT    4
+#define JOGFWD_Z_BIT    5
+#define JOG_ZERO        6
+#define JOG_POT         7     // analog pin
+
+#define JOG_MIN_SPEED   25    // Hz, kleinste Geschwindigkeit, > 10!
+#define JOG_MAX_SPEED   8000  // Hz, größte Schrittgeschwindigkeit
+#define JOG_RAMP        5     // Ramp speed inc/dec in µs per loop (higher=faster)
 
 // Define runtime command special characters. These characters are 'picked-off' directly from the
 // serial read data stream and are not passed to the grbl line execution parser. Select characters
@@ -77,7 +229,7 @@
 // this delay will increase the maximum dwell time linearly, but also reduces the responsiveness of 
 // run-time command executions, like status reports, since these are performed between each dwell 
 // time step. Also, keep in mind that the Arduino delay timer is not very accurate for long delays.
-#define DWELL_TIME_STEP 50 // Integer (1-255) (milliseconds)
+#define DWELL_TIME_STEP 1 // Integer (1-255) (milliseconds)
 
 // If homing is enabled, homing init lock sets Grbl into an alarm state upon power up. This forces
 // the user to perform the homing cycle (or override the locks) before doing anything else. This is
@@ -124,7 +276,7 @@
 // available RAM, like when re-compiling for a Teensy or Sanguino. Or decrease if the Arduino
 // begins to crash due to the lack of available RAM or if the CPU is having trouble keeping
 // up with planning new incoming motions as they are executed. 
-// #define BLOCK_BUFFER_SIZE 18  // Uncomment to override default in planner.h.
+// #define BLOCK_BUFFER_SIZE 32  // Uncomment to override default in planner.h.
 
 // Line buffer size from the serial input stream to be executed. Also, governs the size of 
 // each of the startup blocks, as they are each stored as a string of this size. Make sure
@@ -171,12 +323,6 @@
 // time, which includes the Grbl settings pulse microseconds, must not exceed 127us. Reported
 // successful values for certain setups have ranged from 10 to 20us.
 // #define STEP_PULSE_DELAY 10 // Step pulse delay in microseconds. Default disabled.
-
-// Uncomment the following define if you are using hardware that drives high when your limits
-// are reached. You will need to ensure that you have appropriate pull-down resistors on the
-// limit switch input pins, or that your hardware drives the pins low when they are open (non-
-// triggered).
-#define LIMIT_SWITCHES_ACTIVE_HIGH
 
 // ---------------------------------------------------------------------------------------
 // TODO: Install compile-time option to send numeric status codes rather than strings.

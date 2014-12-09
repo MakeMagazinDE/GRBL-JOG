@@ -38,11 +38,7 @@
 void limits_init() 
 {
   LIMIT_DDR &= ~(LIMIT_MASK); // Set as input pins
-  #ifndef LIMIT_SWITCHES_ACTIVE_HIGH
-    LIMIT_PORT |= (LIMIT_MASK); // Enable internal pull-up resistors. Normal high operation.
-  #else // LIMIT_SWITCHES_ACTIVE_HIGH
-    LIMIT_PORT &= ~(LIMIT_MASK); // Normal low operation. Requires external pull-down.
-  #endif // !LIMIT_SWITCHES_ACTIVE_HIGH
+  LIMIT_PORT &= LIMIT_MASK & settings.invert_mask; // Normal low operation if bits are 0
   if (bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE)) {
     LIMIT_PCMSK |= LIMIT_MASK; // Enable specific pins of the Pin Change Interrupt
     PCICR |= (1 << LIMIT_INT); // Enable Pin Change Interrupt
@@ -91,12 +87,8 @@ ISR(LIMIT_INT_vect)
 // algorithm is written here. This also lets users hack and tune this code freely for
 // their own particular needs without affecting the rest of Grbl.
 // NOTE: Only the abort runtime command can interrupt this process.
-static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, float homing_rate) 
+static void homing_cycle(uint8_t cycle_mask, bool home_dir, float homing_rate) 
 {
-  #ifdef LIMIT_SWITCHES_ACTIVE_HIGH
-    // When in an active-high switch configuration, invert_pin needs to be adjusted.
-    invert_pin = !invert_pin;
-  #endif
 
   // Determine governing axes with finest step resolution per distance for the Bresenham
   // algorithm. This solves the issue when homing multiple axes that have different 
@@ -146,9 +138,9 @@ static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, fl
   if (dt > dt_min) { dt = dt_min; } // Disable acceleration for very slow rates.
       
   // Set default out_bits. 
-  uint8_t out_bits0 = settings.invert_mask;
-  out_bits0 ^= (settings.homing_dir_mask & DIRECTION_MASK); // Apply homing direction settings
-  if (!pos_dir) { out_bits0 ^= DIRECTION_MASK; }   // Invert bits, if negative dir.
+  uint8_t out_bits0 = 0; // no invert anymore!
+  out_bits0 = (~settings.homing_dir_mask) & DIRECTION_MASK; // Apply direction settings
+  if (home_dir) { out_bits0 ^= DIRECTION_MASK; }   // Invert bits, if homing direction
   
   // Initialize stepping variables
   int32_t counter_x = -(step_event_count >> 1); // Bresenham counters
@@ -158,22 +150,22 @@ static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, fl
   uint32_t step_rate = 0;  // Tracks step rate. Initialized from 0 rate. (in step/min)
   uint32_t trap_counter = MICROSECONDS_PER_ACCELERATION_TICK/2; // Acceleration trapezoid counter
   uint8_t out_bits;
-  uint8_t limit_state;
+  uint8_t step_enable;
   for(;;) {
   
     // Reset out bits. Both direction and step pins appropriately inverted and set.
     out_bits = out_bits0;
     
     // Get limit pin state.
-    limit_state = LIMIT_PIN;
-    if (invert_pin) { limit_state ^= LIMIT_MASK; } // If leaving switch, invert to move.
+    step_enable =  LIMIT_MASK & (LIMIT_PIN ^ settings.invert_mask); // If leaving switch, enable to move   
+    if (home_dir) { step_enable = ~step_enable; } // If homing, stop when switch engaged
     
     // Set step pins by Bresenham line algorithm. If limit switch reached, disable and
     // flag for completion.
     if (cycle_mask & (1<<X_AXIS)) {
       counter_x += steps[X_AXIS];
       if (counter_x > 0) {
-        if (limit_state & (1<<X_LIMIT_BIT)) { out_bits ^= (1<<X_STEP_BIT); }
+        if (step_enable & (1<<X_LIMIT_BIT)) { out_bits ^= (1<<X_STEP_BIT); }
         else { cycle_mask &= ~(1<<X_AXIS); }
         counter_x -= step_event_count;
       }
@@ -181,7 +173,7 @@ static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, fl
     if (cycle_mask & (1<<Y_AXIS)) {
       counter_y += steps[Y_AXIS];
       if (counter_y > 0) {
-        if (limit_state & (1<<Y_LIMIT_BIT)) { out_bits ^= (1<<Y_STEP_BIT); }
+        if (step_enable & (1<<Y_LIMIT_BIT)) { out_bits ^= (1<<Y_STEP_BIT); }
         else { cycle_mask &= ~(1<<Y_AXIS); }
         counter_y -= step_event_count;
       }
@@ -189,7 +181,7 @@ static void homing_cycle(uint8_t cycle_mask, int8_t pos_dir, bool invert_pin, fl
     if (cycle_mask & (1<<Z_AXIS)) {
       counter_z += steps[Z_AXIS];
       if (counter_z > 0) {
-        if (limit_state & (1<<Z_LIMIT_BIT)) { out_bits ^= (1<<Z_STEP_BIT); }
+        if (step_enable & (1<<Z_LIMIT_BIT)) { out_bits ^= (1<<Z_STEP_BIT); }
         else { cycle_mask &= ~(1<<Z_AXIS); }
         counter_z -= step_event_count;
       }
@@ -227,12 +219,12 @@ void limits_go_home()
   st_wake_up();
   
   // Search to engage all axes limit switches at faster homing seek rate.
-  homing_cycle(HOMING_SEARCH_CYCLE_0, true, false, settings.homing_seek_rate);  // Search cycle 0
+  homing_cycle(HOMING_SEARCH_CYCLE_0, true, settings.homing_feed_rate);  // Search cycle 0
   #ifdef HOMING_SEARCH_CYCLE_1
-    homing_cycle(HOMING_SEARCH_CYCLE_1, true, false, settings.homing_seek_rate);  // Search cycle 1
+    homing_cycle(HOMING_SEARCH_CYCLE_1, true, settings.homing_feed_rate);  // Search cycle 1
   #endif
   #ifdef HOMING_SEARCH_CYCLE_2
-    homing_cycle(HOMING_SEARCH_CYCLE_2, true, false, settings.homing_seek_rate);  // Search cycle 2
+    homing_cycle(HOMING_SEARCH_CYCLE_2, true, settings.homing_feed_rate);  // Search cycle 2
   #endif
   delay_ms(settings.homing_debounce_delay); // Delay to debounce signal
     
@@ -241,12 +233,12 @@ void limits_go_home()
   int8_t n_cycle = N_HOMING_LOCATE_CYCLE;
   while (n_cycle--) {
     // Leave all switches to release them. After cycles complete, this is machine zero.
-    homing_cycle(HOMING_LOCATE_CYCLE, false, true, settings.homing_feed_rate);
+    homing_cycle(HOMING_LOCATE_CYCLE, false, settings.homing_seek_rate);
     delay_ms(settings.homing_debounce_delay);
     
     if (n_cycle > 0) {
       // Re-approach all switches to re-engage them.
-      homing_cycle(HOMING_LOCATE_CYCLE, true, false, settings.homing_feed_rate);
+      homing_cycle(HOMING_LOCATE_CYCLE, true, settings.homing_seek_rate);
       delay_ms(settings.homing_debounce_delay);
     }
   }

@@ -91,13 +91,13 @@ void st_wake_up()
 	#endif
 	
   if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { 
-    STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); 
+    STEPPERS_ENABLE_PORT &= ~(1<<STEPPERS_ENABLE_BIT);
   } else { 
-    STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT);
+    STEPPERS_ENABLE_PORT |= (1<<STEPPERS_ENABLE_BIT); 
   }
   if (sys.state == STATE_CYCLE) {
     // Initialize stepper output bits
-    out_bits = (0) ^ (settings.invert_mask); 
+    out_bits = 0; 
     // Initialize step pulse timing from settings. Here to ensure updating after re-writing.
     #ifdef STEP_PULSE_DELAY
       // Set total step pulse time after direction pin set. Ad hoc computation from oscilloscope.
@@ -127,9 +127,9 @@ void st_go_idle()
     // stop and not drift from residual inertial forces at the end of the last movement.
     delay_ms(settings.stepper_idle_lock_time);
     if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { 
-      STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); 
+      STEPPERS_ENABLE_PORT |= (1<<STEPPERS_ENABLE_BIT); 
     } else { 
-      STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); 
+      STEPPERS_ENABLE_PORT &= ~(1<<STEPPERS_ENABLE_BIT); 
     }   
   }
 }
@@ -158,12 +158,36 @@ ISR(TIMER1_COMPA_vect)
   
   // Set the direction pins a couple of nanoseconds before we step the steppers
   STEPPING_PORT = (STEPPING_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
+  
+  uint8_t my_outbits;
+  my_outbits = out_bits;
+
+// Do not generate negative direction step pulses if
+// already ran into limit switches to prevent damage -cm
+  static volatile uint8_t limit_state;
+
+  limit_state =  LIMIT_MASK & (LIMIT_PIN ^ settings.invert_mask);
+  if ((limit_state & (1<<X_LIMIT_BIT)) && (out_bits & (1<<X_DIRECTION_BIT)))
+    {
+    my_outbits &= ~(1<<X_STEP_BIT);
+    }
+  if ((limit_state & (1<<Y_LIMIT_BIT)) && (out_bits & (1<<Y_DIRECTION_BIT)))
+    {
+    my_outbits &= ~(1<<Y_STEP_BIT);
+    }
+  if ((limit_state & (1<<Z_LIMIT_BIT)) && (out_bits & (1<<Z_DIRECTION_BIT)))
+    {
+    my_outbits &= ~(1<<Z_STEP_BIT);
+    }
+
   // Then pulse the stepping pins
   #ifdef STEP_PULSE_DELAY
-    step_bits = (STEPPING_PORT & ~STEP_MASK) | out_bits; // Store out_bits to prevent overwriting.
+    step_bits = (STEPPING_PORT & ~STEP_MASK) | my_outbits; // Store out_bits to prevent overwriting.
   #else  // Normal operation
-    STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | out_bits;
+    STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | my_outbits;
   #endif
+  
+  
   // Enable step pulse reset timer so that The Stepper Port Reset Interrupt can reset the signal after
   // exactly settings.pulse_microseconds microseconds, independent of the main Timer1 prescaler.
   TCNT2 = step_pulse_time; // Reload timer counter
@@ -316,7 +340,7 @@ ISR(TIMER1_COMPA_vect)
       plan_discard_current_block();
     }
   }
-  out_bits ^= settings.invert_mask;  // Apply step and direction invert mask    
+  // out_bits ^= settings.invert_mask;  // Apply step and direction invert mask    
   busy = false;
 }
 
@@ -329,7 +353,7 @@ ISR(TIMER1_COMPA_vect)
 ISR(TIMER2_OVF_vect)
 {
   // Reset stepping pins (leave the direction pins)
-  STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | (settings.invert_mask & STEP_MASK); 
+  STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK); 
   TCCR2B = 0; // Disable Timer2 to prevent re-entering this interrupt when it's not needed. 
 }
 
@@ -359,8 +383,8 @@ void st_init()
 {
   // Configure directions of interface pins
   STEPPING_DDR |= STEPPING_MASK;
-  STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | settings.invert_mask;
-  STEPPERS_DISABLE_DDR |= 1<<STEPPERS_DISABLE_BIT;
+  STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK); // | settings.invert_mask;
+  STEPPERS_ENABLE_DDR |= 1<<STEPPERS_ENABLE_BIT;
 
   // waveform generation = 0100 = CTC
   TCCR1B &= ~(1<<WGM13);

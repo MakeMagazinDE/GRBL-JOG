@@ -56,17 +56,7 @@ void jog_init() {
   ADCSRA = ADCSRA_init;
   ADMUX = ADMUX_init | JOG_POT;     // Kanal, ADLAR =1 (left adjustet, 8-Bit-Result on ADCH)
 
-  #ifdef JOG_SPI_PRESENT
-    JOG_SPI_DDR |= JOG_SPI_MASK; // Set MOSI, SCK and /SS output
-    SPCR = (1<<SPE)|(1<<MSTR); // Enable SPI, Master, set clock rate fck/2.
-    SPSR = (1<<SPI2X); // Double speed
-    JOG_SPI_PORT |= (1<<JOG_SPI_SS);  // Slave select pullup on
-  #endif
 }
-
-#ifdef JOG_SPI_PRESENT
-// TODO: send SPI on /SS request. Dummy data for now, does not work
-#endif
 
 void jog_btn_release() {
   uint8_t jog_bits;
@@ -174,7 +164,7 @@ void jogging()
   uint8_t reverse_flag = 0;
   uint8_t out_bits = 0; 
   uint8_t jog_select = 0; 
-  out_bits0 = (0) ^ (settings.invert_mask); 
+  out_bits0 = 0; // no invert anymore!
   
   ADCSRA = ADCSRA_init | (1<<ADIF); //0x93, clear ADIF
   ADCSRA = ADCSRA_init | (1<<ADSC); //0xC3; start conversion  
@@ -247,13 +237,8 @@ void jogging()
     ADCSRA = ADCSRA_init | (1<<ADIF); //0x93, clear ADIF
 
     // Get limit pin state
-    #ifdef LIMIT_SWITCHES_ACTIVE_HIGH
-      // When in an active-high switch configuration
-      limit_state = LIMIT_PIN;
-    #else
-      limit_state = LIMIT_PIN ^ LIMIT_MASK;
-    #endif
-    if ((limit_state & LIMIT_MASK) && reverse_flag) { jog_exit = 1; } // immediate stop
+    limit_state =  LIMIT_MASK & (LIMIT_PIN ^ settings.invert_mask);
+    if (limit_state && reverse_flag) { jog_exit = 1; } // immediate stop on any switch
  
     jog_bits = (~JOGSW_PIN) & JOGSW_MASK; // active low
     if (jog_bits == jog_bits_old) { // nothing changed
@@ -266,7 +251,7 @@ void jogging()
     }
     else {
       if (step_rate > (JOG_MIN_SPEED*2)) {  // switch change happened, fast brake to complete stop
-        step_rate = ((step_rate * 99) / 100) - 10;
+        step_rate = ((step_rate * 99) / 100) - 5;
       }
       else { jog_exit = 1; } // finished to stop and exit
     }
@@ -277,9 +262,6 @@ void jogging()
       st_go_idle(); 
       sys.state = last_sys_state;
       sys_sync_current_position();
-      if (jog_exit) {
-        report_realtime_status();
-      }
       return; 
     }
     

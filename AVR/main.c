@@ -71,7 +71,7 @@ int main(void)
       limits_init();
       jog_init(); // by cm
       st_reset(); // Clear stepper subsystem variables.
-
+      st_init(); // reset ports
       // Sync cleared gcode and planner positions to current system position, which is only
       // cleared upon startup, not a reset/abort. 
       sys_sync_current_position();
@@ -105,7 +105,7 @@ int main(void)
 		jogging();  // handle jog buttons
     protocol_execute_runtime();     
     protocol_process(); // ... process the serial protocol
-    
+        
   }
   return 0;   /* never reached */
 }

@@ -25,8 +25,6 @@
 #include <math.h>
 #include "nuts_bolts.h"
 
-#define GRBL_VERSION "0.8c/jog"
-
 // Version of the EEPROM data. Will be used to migrate existing data from older versions of Grbl
 // when firmware is upgraded. Always stored in byte 0 of eeprom
 #define SETTINGS_VERSION 5

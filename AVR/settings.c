@@ -77,7 +77,7 @@ void settings_reset(bool reset_all) {
     settings.default_seek_rate = DEFAULT_RAPID_FEEDRATE;
     settings.acceleration = DEFAULT_ACCELERATION;
     settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-    settings.invert_mask = DEFAULT_STEPPING_INVERT_MASK;
+    settings.invert_mask = DEFAULT_LIMIT_INVERT_MASK;
     settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
   }
   // New settings since last version
@@ -88,8 +88,8 @@ void settings_reset(bool reset_all) {
   if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
   if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
   settings.homing_dir_mask = DEFAULT_HOMING_DIR_MASK;
-  settings.homing_feed_rate = DEFAULT_HOMING_FEEDRATE;
-  settings.homing_seek_rate = DEFAULT_HOMING_RAPID_FEEDRATE;
+  settings.homing_feed_rate = DEFAULT_HOMING_RAPID_FEEDRATE;
+  settings.homing_seek_rate = DEFAULT_HOMING_FEEDRATE;
   settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
   settings.homing_pulloff = DEFAULT_HOMING_PULLOFF;
   settings.z_zero_pulloff = DEFAULT_Z_PULLOFF;
