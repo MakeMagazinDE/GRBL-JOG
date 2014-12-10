@@ -10,8 +10,8 @@ File_7=TSourceModule,'E:\Dropbox\GRBL_644\GRBLSEND\hpgl_import.inc',0,1,215,83,1
 File_8=TSourceModule,'E:\Dropbox\GRBL_644\GRBLSEND\dsruler\dsRuler.pas',0,1,16,5,588,0,0,,
 
 [Modules]
-Module0=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_com.pas
-Module1=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_player_main.pas
+Module0=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_player_main.pas
+Module1=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_com.pas
 Module2=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\import_files.pas
 Module3=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\cam_view.pas
 Module4=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\drawing_window.pas
@@ -20,14 +20,14 @@ Module6=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\hpgl_import.inc
 Count=7
 EditWindowCount=1
 
-[E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_com.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
 [E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_player_main.pas]
 ModuleType=TSourceModule
 FormState=1
+FormOnTop=0
+
+[E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_com.pas]
+ModuleType=TSourceModule
+FormState=0
 FormOnTop=0
 
 [E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\import_files.pas]
@@ -55,7 +55,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=8
-CurrentView=2
+CurrentEditView=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_player_main.pas
 View0=0
 View1=1
 View2=2
@@ -81,15 +81,17 @@ DockedToMainForm=1
 MessageView=MessageView@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1906
-LeftPanelClients=StructureView,DockSite2
-LeftPanelData=00000800010100000000201A0000000000000172070000000000000100000000C50D00001100000053747275637475726556696577466F726D0100000000D522000009000000446F636B5369746532FFFFFFFF
+LeftPanelClients=StructureView,DockSite0
+LeftPanelData=0000080001010000000063160000000000000172070000000000000100000000C50D00001100000053747275637475726556696577466F726D0100000000DA1D000009000000446F636B5369746530FFFFFFFF
 RightPanelSize=2256
-RightPanelClients=ToolForm,DockSite0
-RightPanelData=00000800010100000000201A00000000000001D00800000000000001000000006211000009000000446F636B53697465300100000000D522000008000000546F6F6C466F726DFFFFFFFF
-BottomPanelSize=0
-BottomPanelClients=MessageView@EditWindow0,DockSite1
-BottomPanelData=000008000102020000000B0000004D6573736167655669657709000000446F636B5369746531783000000000000002FB04000000000000FFFFFFFF
+RightPanelClients=DockSite1,ToolForm
+RightPanelData=00000800010100000000631600000000000001D00800000000000001000000006211000009000000446F636B53697465310100000000DA1D000008000000546F6F6C466F726DFFFFFFFF
+BottomPanelSize=1250
+BottomPanelClients=MessageView@EditWindow0,DockSite2
+BottomPanelData=0000080001020100000009000000446F636B53697465327F3300000000000002E20400000000000001000000007F3300000B0000004D65737361676556696577FFFFFFFF
 BottomMiddlePanelSize=0
+BottomMiddlePanelClients=DockSite3
+BottomMiddelPanelData=0000080001000100000009000000446F636B53697465330000000000000000000000000000000000FFFFFFFF
 
 [View0]
 CustomEditViewType=TEditView
@@ -104,9 +106,9 @@ Bookmarks=
 [View1]
 CustomEditViewType=TEditView
 Module=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_com.pas
-CursorX=53
-CursorY=180
-TopLine=141
+CursorX=28
+CursorY=212
+TopLine=198
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -151,12 +153,12 @@ Bookmarks=
 [View6]
 CustomEditViewType=TEditView
 Module=E:\Dropbox\GIT\GRBL-JOG\GRBLSEND\grbl_player_main.pas
-CursorX=52
-CursorY=665
-TopLine=645
+CursorX=36
+CursorY=1860
+TopLine=1814
 LeftCol=1
 Elisions=
-Bookmarks={1,244,22}{2,540,19}{3,630,19}{4,1529,1}
+Bookmarks={1,244,22}{2,540,19}{3,630,19}{4,1533,1}
 
 [View7]
 CustomEditViewType=TEditView
@@ -249,12 +251,12 @@ State=0
 Left=0
 Top=557
 Width=2256
-Height=4422
+Height=3103
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2256
-ClientHeight=4422
-TBDockHeight=9026
+ClientHeight=3103
+TBDockHeight=6517
 LRDockWidth=2256
 Dockable=1
 StayOnTop=0
@@ -268,16 +270,21 @@ State=0
 Left=0
 Top=0
 Width=1856
-Height=5293
+Height=3974
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1856
-ClientHeight=5293
+ClientHeight=3974
 TBDockHeight=414
 LRDockWidth=1906
 Dockable=1
 StayOnTop=0
 SplitPos=95
+
+[PropInspDesignerSelection]
+ArrangeBy=Category
+SelectedItem=Verschiedene.Name,
+ExpandedItems=Aktion=1,"Drag, Drop und Docking=1",Eingabe=1,"Hilfe und Hinweise=1",Länderkennung=1,Layout=1,Legacy=1,Linkage=1,Übersetzungsrelevant=1,Verschiedene=1,Visuell=1,Layout.Anchors=0,Layout.Constraints=0,Übersetzungsrelevant.Constraints=0,Übersetzungsrelevant.Font=0
 
 [BreakpointWindow]
 PercentageSizes=1
@@ -345,26 +352,49 @@ StayOnTop=0
 [MessageView@EditWindow0]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
-Left=-10
-Top=-1152
-Width=4325
-Height=1155
+Left=0
+Top=23
+Width=9888
+Height=1095
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4325
-ClientHeight=1155
-TBDockHeight=1155
+ClientWidth=9888
+ClientHeight=1095
+TBDockHeight=1095
 LRDockWidth=4325
 Dockable=1
 StayOnTop=0
 
 [DockHosts]
-DockHostCount=3
+DockHostCount=4
 
 [DockSite0]
+DockSiteType=1
+PercentageSizes=1
+Create=1
+Visible=1
+Docked=1
+State=0
+Left=0
+Top=446
+Width=1906
+Height=4060
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1906
+ClientHeight=4060
+TBDockHeight=5112
+LRDockWidth=1906
+Dockable=1
+StayOnTop=0
+TabPosition=1
+ActiveTabID=PropertyInspector
+TabDockClients=PropertyInspector
+
+[DockSite1]
 DockSiteType=1
 PercentageSizes=1
 Create=1
@@ -379,7 +409,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=2256
 ClientHeight=4371
-TBDockHeight=1784
+TBDockHeight=6319
 LRDockWidth=2256
 Dockable=1
 StayOnTop=0
@@ -387,15 +417,15 @@ TabPosition=1
 ActiveTabID=ProjectManager
 TabDockClients=ProjectManager
 
-[DockSite1]
+[DockSite2]
 DockSiteType=1
 PercentageSizes=1
 Create=1
 Visible=0
 Docked=1
 State=0
-Left=-111
-Top=3
+Left=-10
+Top=-1152
 Width=3825
 Height=5052
 MaxLeft=-1
@@ -410,26 +440,6 @@ TabPosition=1
 ActiveTabID=WatchWindow
 TabDockClients=BreakpointWindow,CallStackWindow,WatchWindow
 
-[DockSite2]
+[DockSite3]
 DockSiteType=1
-PercentageSizes=1
-Create=1
-Visible=1
-Docked=1
-State=0
-Left=0
-Top=446
-Width=1906
-Height=5379
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1906
-ClientHeight=5379
-TBDockHeight=1784
-LRDockWidth=1906
-Dockable=1
-StayOnTop=0
-TabPosition=1
-ActiveTabID=PropertyInspector
-TabDockClients=PropertyInspector
 

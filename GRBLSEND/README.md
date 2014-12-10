@@ -3,7 +3,9 @@
 ###CNC-Steuerung für GRBL-JOG Projekt
 
 Erstellt mit Delphi 2005 PE. Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 4/2014](http://shop.heise.de/katalog/ct-hacks-4-2014)**. Ausführbare Datei (.EXE, Win32) im Verzeichnis /bin, benötigt 
-"default.job" und ggf die Beispiele.
+"default.job" und ggf. die Beispiele.
+
+Das Projekt befindet sich noch in Entwicklung, bitte auf evt. Updates prüfen. Die passende GRBL-Steuerplatine finden Sie in unserem Github-Repo GRBL-JOG.
 
 ###CNC Control Software for GRBL Jogger Project
 

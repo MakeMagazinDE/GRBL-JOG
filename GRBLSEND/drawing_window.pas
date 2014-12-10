@@ -923,7 +923,6 @@ begin
     exit;
   end;
   if (ssRight in Shift) then begin
-    grbl_available:= false; // sonst funktioniert Popup Auto Close nicht richtig!
     search_entry_in_drawing(x,y);
     draw_cnc_all;
     pt.x := X + 15;
@@ -941,7 +940,6 @@ begin
         PopupMenuObject.Popup(pt.X, pt.Y);
     end else
       PopupMenuPart.Popup(pt.X, pt.Y);
-    grbl_wait_timer_finished; // sonst funktioniert Popup Auto Close nicht richtig!
   end;
 end;
 
@@ -1059,8 +1057,8 @@ procedure TForm2.pu_toolisatpointClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_to_toolcursor;
-  x:= ToolCursor.X / 40;
-  y:= ToolCursor.Y / 40;
+  x:= ToolCursor.X / c_hpgl_scale;
+  y:= ToolCursor.Y / c_hpgl_scale;
   grbl_offsXY(x, y);
   NeedsRedraw:= true;
   NeedsRefresh3D:= true;
@@ -1071,8 +1069,8 @@ procedure TForm2.pu_toolIsAtCenterClick(Sender: TObject);
 var x,y: Double;
 begin
   hilite_center_to_toolcursor;
-  x:= ToolCursor.X / 40;
-  y:= ToolCursor.Y / 40;
+  x:= ToolCursor.X / c_hpgl_scale;
+  y:= ToolCursor.Y / c_hpgl_scale;
   grbl_offsXY(x, y);
   NeedsRedraw:= true;
   NeedsRefresh3D:= true;

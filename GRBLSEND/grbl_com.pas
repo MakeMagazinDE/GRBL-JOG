@@ -16,6 +16,9 @@ type
   function InitFTDI(my_device:Integer): String;
   function CheckCom(my_ComNumber: Integer): Integer;  // check if a COM port is available
 
+  // Resync, sende #13 und warte 1000 ms auf OK
+  function grbl_resync: boolean;
+
   // Warte, bis Timer1-Routine beendet
   procedure grbl_wait_timer_finished;
 
@@ -88,7 +91,7 @@ var
   ftdi_sernum_arr, ftdi_desc_arr: Array[0..15] of ShortString;
   grbl_oldx, grbl_oldy, grbl_oldz: Double;
   grbl_oldf: Integer;
-  grbl_receveivelist: TSTringList;
+  grbl_sendlist, grbl_receveivelist: TSTringList;
 
 implementation
 
@@ -141,7 +144,6 @@ procedure grbl_wait_timer_finished;
 // Warte, bis Timer1-Routine beendet
 begin
   TimerFinished:= false;
-  TimerCount1:= 0;
   repeat
     Application.ProcessMessages;
   until TimerFinished;
@@ -187,10 +189,12 @@ begin
         if my_char >= #32 then
           my_str:= my_str + my_char;
       end;
-    until (my_char= #10) or ((GetTickCount > targettime) and has_timeout);
+    until (my_char= #10) or ((GetTickCount > targettime) and has_timeout) or CancelProc;
     if has_timeout then
       if (GetTickCount > targettime) then
         my_str:= '#Timeout';
+    if CancelProc then
+      my_str:= '#Cancelled';
   end else
     my_str:= '#Device not open';
   grbl_receiveStr:= my_str;
@@ -203,7 +207,6 @@ function grbl_sendStr(my_str: String; ProcMsg, my_getok: boolean): String;
 // GRBL-Steuerzeichen sein (?,!,~,CTRL-X)
 var
   i: longint;
-
 begin
   grbl_sendStr:= '';
   if ftdi_isopen then begin
@@ -214,28 +217,26 @@ begin
   end;
 end;
 
-procedure grbl_addStr(my_str: String);
-// wartet auf Timer1-Ende, setzt grbl_available auf FALSE und
-// sendet dann my_str mit CR an GRBL.
-// Zeigt Befehl und Antwort in Memo1-Feld an.
-var
-  i: longint;
-  my_response: String;
+function grbl_resync: boolean;
+// Resync, sende #13 und warte 1000 ms auf OK
+var my_str: String;
+  i: Integer;
 begin
-  LEDbusy.Checked:= true;
+  grbl_resync:= false;
+  my_str:= '';
   if ftdi_isopen then begin
-    grbl_available:= false;
-    grbl_wait_timer_finished;  // wartet auf Timer1-Ende
     grbl_rx_clear;
-    my_response:= grbl_sendStr(my_str + #13, true, true);
-    Form1.Memo1.lines.add(my_str + '; ' + my_response);
-    grbl_available:= true;
-  end else begin
-    grbl_available:= false;
-    grbl_wait_timer_finished;  // wartet auf Timer1-Ende
-    Form1.Memo1.lines.add(my_str + '; #Device not open');
-    grbl_available:= true;
+    my_str:= #13;
+    ftdi.write(@my_str[1], 1, i);
+    my_str:= grbl_receiveStr(1000, true);
+    grbl_resync:= (my_str = 'ok');
   end;
+end;
+
+procedure grbl_addStr(my_str: String);
+// Zeile an Sendeliste anhängen, wird in Timer2 behandelt
+begin
+  grbl_sendlist.add(my_str);
 end;
 
 // #############################################################################
@@ -514,7 +515,6 @@ begin
     ftdi.setDataCharacteristics(fBits8, fStopBits1, fParityNone);
     ftdi.setFlowControl(fFlowNone, 0, 0);
     result:= 'USB connected';
-    grbl_available:= true;
   end else
     result:= '### Reset error';
 end;
