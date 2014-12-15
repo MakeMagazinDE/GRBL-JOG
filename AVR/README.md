@@ -14,13 +14,16 @@ Bei Verwendung eines ATmega644 statt ATmega644P ist das Makefile anzupassen und 
 kompilieren.
 
 Bitte beachten Sie, dass bei einigen chinesischen Schrittmotortreibern die Belegungen der XYZ-Step/Direction-Pins 
-vertauscht sind. Auf der GRBL- Jogger-Platine sind dann die Leiterbahnen unter den Pfostenleisten PL9 und 10 
+vertauscht sind. Auf der GRBL-Jogger-Platine sind dann die Leiterbahnen unter den Pfostenleisten PL9 und 10 
 aufzutrennen und die Verbindungen mit Jumper-Kabeln in der richtigen Reihenfolge herzustellen. Außerdem erwarten einige 
 chinesische Schrittmotortreiber das Enable-Signal auf Pin 16 des D-Sub-Stecker und nicht auf Pin 1. Es dürfen dann die 
 Jumper JP4 bis JP6 nicht gesteckt werden, stattdessen ist die Verbindung über ein Jumper-Kabel zwischen PL9 Pin 1 und 
 PL10 Pin 16 herzustellen.
 
 Anleitungen zu verschiedenen Treiberkarten finden Sie in unserem Github-Repository TB6560-BOARDS. 
+
+Ein sehr komfortables Steuerprogramm mit HPGL- und Excellon-Import, Webcam-Unterstützung, Preview und 
+CAM-Funktionen finden Sie in unserem **[https://github.com/heise/GRBLize](GRBLize-Repository)**. 
 
 Carsten Meyer, Redaktion c't Hacks, Make Deutschland (cm@ct.de)
 
