@@ -20,18 +20,15 @@ chinesische Schrittmotortreiber das Enable-Signal auf Pin 16 des D-Sub-Stecker u
 Jumper JP4 bis JP6 nicht gesteckt werden, stattdessen ist die Verbindung über ein Jumper-Kabel zwischen PL9 Pin 1 und 
 PL10 Pin 16 herzustellen.
 
-Anleitungen zu verschiedenen Treiberkarten finden Sie in unserem Github-Repository TB6560-BOARDS. 
+Dokumentationen zu verschiedenen Treiberkarten finden Sie im **[TB6560-BOARDS-Repository](https://github.com/heise/TB6560-BOARDS)**. 
 
 Ein sehr komfortables Steuerprogramm mit HPGL- und Excellon-Import, Webcam-Unterstützung, Preview und 
-CAM-Funktionen finden Sie in unserem **[https://github.com/heise/GRBLize](GRBLize-Repository)**. 
+CAM-Funktionen finden Sie in unserem **[GRBLize-Repository](https://github.com/heise/GRBLize)**. 
 
 Carsten Meyer, Redaktion c't Hacks, Make Deutschland (cm@ct.de)
 
 
 **Achtung:** Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkstück) - ggf. Z-Skalierung oder Schrittmotor- und Homing-Richtung in GRBL-Port-Invertierungsparametern ändern:
-
-Normal (Z+ up): $6=8 / $18=160<br>
-Invert (Z+ down): $6=0 / $18=168<br>
 
 Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
 
@@ -43,24 +40,27 @@ use with **c't Hacks GRBL-Jogger PCB**. Default settings and Z scaling for **c't
 Hacks WOODMILL** project. Recompile for 644P or different Z scale setting - see 
 'config.h' and 'pin_map.h' files for details.
 
-Normal (Z+ up): $6=8 / $18=160<br>
-Invert (Z+ down): $6=0 / $18=168<br>
-
 ------------
 
-Grbl is a no-compromise, high performance, low cost alternative to parallel-port-based motion control for CNC milling. It will run on a vanilla Arduino (Duemillanove/Uno) as long as it sports an Atmega 328. 
+Grbl is a no-compromise, high performance, low cost alternative to parallel-port-based motion control for CNC milling. 
+It will run on a vanilla Arduino (Duemillanove/Uno) as long as it sports an Atmega 328. 
 
-The controller is written in highly optimized C utilizing every clever feature of the AVR-chips to achieve precise timing and asynchronous operation. It is able to maintain up to 30kHz of stable, jitter free control pulses.
+The controller is written in highly optimized C utilizing every clever feature of the AVR-chips to achieve precise 
+timing and asynchronous operation. It is able to maintain up to 30kHz of stable, jitter free control pulses.
 
-It accepts standards-compliant G-code and has been tested with the output of several CAM tools with no problems. Arcs, circles and helical motion are fully supported, as well as, other basic functional g-code commands. Functions and variables are not currently supported, but may be included in future releases in a form of a pre-processor.
+It accepts standards-compliant G-code and has been tested with the output of several CAM tools with no problems. Arcs, 
+circles and helical motion are fully supported, as well as, other basic functional g-code commands. Functions and 
+variables are not currently supported, but may be included in future releases in a form of a pre-processor.
 
-Grbl includes full acceleration management with look ahead. That means the controller will look up to 18 motions into the future and plan its velocities ahead to deliver smooth acceleration and jerk-free cornering.
+Grbl includes full acceleration management with look ahead. That means the controller will look up to 18 motions into 
+the future and plan its velocities ahead to deliver smooth acceleration and jerk-free cornering.
 
 _The project was initially inspired by the Arduino GCode Interpreter by Mike Ellery_
 
 -------------
 
-Grbl is an open-source project and fueled by the free-time of our intrepid administrators and altruistic users. If you'd like to donate, all proceeds will be used to help fund supporting hardware and testing equipment. Thank you!
+Grbl is an open-source project and fueled by the free-time of our intrepid administrators and altruistic users. If you'd 
+like to donate, all proceeds will be used to help fund supporting hardware and testing equipment. Thank you!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNQZV7GRGQKVY)
 
