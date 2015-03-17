@@ -322,7 +322,7 @@
 // NOTE: Uncomment to enable. The recommended delay must be > 3us and the total step pulse
 // time, which includes the Grbl settings pulse microseconds, must not exceed 127us. Reported
 // successful values for certain setups have ranged from 10 to 20us.
-// #define STEP_PULSE_DELAY 10 // Step pulse delay in microseconds. Default disabled.
+#define STEP_PULSE_DELAY 10 // Step pulse delay in microseconds. Default disabled.
 
 // ---------------------------------------------------------------------------------------
 // TODO: Install compile-time option to send numeric status codes rather than strings.
