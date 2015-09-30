@@ -1,4 +1,4 @@
-![GitHub Logo](AVR/doc/media/Grbl Logo 250px.png)
+![GitHub Logo](/doc/media/Grbl Logo 250px.png)
 
 #Grbl 0.9j/jog
 
