@@ -1,0 +1,1 @@
+avrdude -C "avrdude.conf" -pm328p -cstk500v1 -P COM3 -b57600 -D -U flash:w:"grbl.hex":i
