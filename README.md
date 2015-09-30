@@ -1,3 +1,7 @@
+![GitHub Logo](http://www.heise.de/make/icons/make_logo.png)
+
+***
+
 #Grbl 0.9j/jog
 
 - Angepasst auf GRBL Version 0.9j
@@ -21,6 +25,8 @@ Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014 mit verkürzter Koord
 Bei Verwendung eines ATmega644 statt ATmega644P ist das Makefile anzupassen und die Firmware mit WinAVR/GCC-AVR neu zu 
 kompilieren.
 
+***
+
 #Schrittmotortreiber
 
 Bitte beachten Sie, dass bei einigen chinesischen Schrittmotortreibern die Belegungen der XYZ-Step/Direction-Pins 
@@ -42,6 +48,7 @@ Carsten Meyer, Redaktion c't Hacks, Make Deutschland (cm@ct.de)
 
 Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
 
+***
 
 **An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller**
 
@@ -49,7 +56,7 @@ Note: Version 0.9j for ATmega644 with jog control. Intended for
 use with **c't Hacks GRBL-Jogger PCB**. Recompile for 644P or different Z scale setting - see 
 'config.h' and 'pin_map.h' files for details.
 
-------------
+***
 
 Grbl is a no-compromise, high performance, low cost alternative to parallel-port-based motion control for CNC milling. 
 It will run on a vanilla Arduino (Duemillanove/Uno) as long as it sports an Atmega 328. 
