@@ -1,4 +1,6 @@
-![GitHub Logo](/AVR/doc/media/Grbl Logo 250px.png)
+![GitHub Logo](http://www.heise.de/make/icons/make_logo.png)
+
+Maker Media GmbH und c't, Heise Zeitschriften Verlag
 
 ***
 
@@ -15,6 +17,8 @@
 - Unterstützt neues CNC-Steuerprogramm GRBLize 1.0b (siehe unsere anderen Repositories)
 
 ***
+
+![GitHub Logo](/AVR/doc/media/Grbl Logo 250px.png)
 
 Note: Version 0.9j for ATmega644 with jog control. Intended for use with **c't Hacks GRBL-Jogger PCB**. Recompile for 644P or different Z scale setting - see 
 'config.h' and 'pin_map.h' files for details.
