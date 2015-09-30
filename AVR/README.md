@@ -11,6 +11,13 @@
 - Beschleunigungswerte und und Seek-Geschwindigkeit für jede Achse getrennt einstellbar
 - keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
 - Schnittstelle jetzt 115200 Bd, 8n1
+- Weitreichende Anpassungen möglich, siehe 'config.h' und 'cpu_map_atmega644p.h'
+- Unterstützt neues CNC-Steuerprogramm GRBLize 1.0b (siehe unsere anderen Repositories)
+
+***
+
+Note: Version 0.9j for ATmega644 with jog control. Intended for use with **c't Hacks GRBL-Jogger PCB**. Recompile for 644P or different Z scale setting - see 
+'config.h' and 'pin_map.h' files for details.
 
 ***
 
