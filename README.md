@@ -1,6 +1,14 @@
-#Grbl 0.8c/jog.2 
+#Grbl 0.9j/jog
 
-**c't Hacks GRBL-Jogger Version**
+- Angepasst auf GRBL Version 0.9j
+- Standard-Format der Statusmeldung und Befehlsverarbeitung wie im offiziellen Grbl-Build 
+- Jog-Routinen nun Interrupt-gesteuert, keine Störungen des Motorlaufs
+- stark verbesserte Performance
+- Beschleunigungswerte und und Seek-Geschwindigkeit für jede Achse getrennt einstellbar
+- keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
+- Schnittstelle jetzt 115200 Bd, 8n1
+
+#Grbl 0.8c/jog.2 
 
 Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014 mit verkürzter Koordinatenausgabe bei Jog und einigen Bugfixes
 
@@ -12,6 +20,8 @@ Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014 mit verkürzter Koord
 
 Bei Verwendung eines ATmega644 statt ATmega644P ist das Makefile anzupassen und die Firmware mit WinAVR/GCC-AVR neu zu 
 kompilieren.
+
+#Schrittmotortreiber
 
 Bitte beachten Sie, dass bei einigen chinesischen Schrittmotortreibern die Belegungen der XYZ-Step/Direction-Pins 
 vertauscht sind. Auf der GRBL-Jogger-Platine sind dann die Leiterbahnen unter den Pfostenleisten PL9 und 10 
@@ -35,9 +45,8 @@ Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de
 
 **An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller**
 
-Note: Version 0.8c/j (prelimiary) for ATmega644 with jog control. Intended for 
-use with **c't Hacks GRBL-Jogger PCB**. Default settings and Z scaling for **c't 
-Hacks WOODMILL** project. Recompile for 644P or different Z scale setting - see 
+Note: Version 0.9j for ATmega644 with jog control. Intended for 
+use with **c't Hacks GRBL-Jogger PCB**. Recompile for 644P or different Z scale setting - see 
 'config.h' and 'pin_map.h' files for details.
 
 ------------
