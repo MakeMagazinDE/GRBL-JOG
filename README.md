@@ -4,6 +4,8 @@
 
 #Grbl 0.9j/jog
 
+Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014
+
 - Angepasst auf GRBL Version 0.9j
 - Standard-Format der Statusmeldung und Befehlsverarbeitung wie im offiziellen Grbl-Build 
 - Jog-Routinen nun Interrupt-gesteuert, keine Störungen des Motorlaufs
@@ -13,8 +15,6 @@
 - Schnittstelle jetzt 115200 Bd, 8n1
 
 #Grbl 0.8c/jog.2 
-
-Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014 mit verkürzter Koordinatenausgabe bei Jog und einigen Bugfixes
 
 - Default-Parameter angepasst für CNC-Fräse aus Alu (c't Hacks 1/2013 mit TR12x6 Spindeln, grbl_alum.hex) 
 - Default-Parameter angepasst für CNC-Fräse aus Multiplex-Holz mit Zahnriemen (c't Hacks 1/2014, grbl_wood.hex). Bitte Flash-Batch entsprechend Dateinamen anpassen.
@@ -41,43 +41,8 @@ Dokumentationen zu verschiedenen Treiberkarten finden Sie im **[TB6560-BOARDS-Re
 Ein sehr komfortables Steuerprogramm mit HPGL- und Excellon-Import, Webcam-Unterstützung, Preview und 
 CAM-Funktionen finden Sie in unserem **[GRBLize-Repository](https://github.com/heise/GRBLize)**. 
 
-Carsten Meyer, Redaktion c't Hacks, Make Deutschland (cm@ct.de)
-
+Carsten Meyer, Redaktion Make Deutschland (cm@ct.de)
 
 **Achtung:** Einige CAM-Programme liefern invertierte Z-Werte (positive Z-Werte im Werkstück) - ggf. Z-Skalierung oder Schrittmotor- und Homing-Richtung in GRBL-Port-Invertierungsparametern ändern:
 
 Bitte beachten Sie unbedingt den Artikel in **[c't Hacks 1/2014](http://heise.de/-2109420)**.
-
-***
-
-**An embedded g-code interpreter and motion-controller for the Arduino/AVR328 microcontroller**
-
-Note: Version 0.9j for ATmega644 with jog control. Intended for 
-use with **c't Hacks GRBL-Jogger PCB**. Recompile for 644P or different Z scale setting - see 
-'config.h' and 'pin_map.h' files for details.
-
-***
-
-Grbl is a no-compromise, high performance, low cost alternative to parallel-port-based motion control for CNC milling. 
-It will run on a vanilla Arduino (Duemillanove/Uno) as long as it sports an Atmega 328. 
-
-The controller is written in highly optimized C utilizing every clever feature of the AVR-chips to achieve precise 
-timing and asynchronous operation. It is able to maintain up to 30kHz of stable, jitter free control pulses.
-
-It accepts standards-compliant G-code and has been tested with the output of several CAM tools with no problems. Arcs, 
-circles and helical motion are fully supported, as well as, other basic functional g-code commands. Functions and 
-variables are not currently supported, but may be included in future releases in a form of a pre-processor.
-
-Grbl includes full acceleration management with look ahead. That means the controller will look up to 18 motions into 
-the future and plan its velocities ahead to deliver smooth acceleration and jerk-free cornering.
-
-_The project was initially inspired by the Arduino GCode Interpreter by Mike Ellery_
-
--------------
-
-Grbl is an open-source project and fueled by the free-time of our intrepid administrators and altruistic users. If you'd 
-like to donate, all proceeds will be used to help fund supporting hardware and testing equipment. Thank you!
-
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNQZV7GRGQKVY)
-
-
