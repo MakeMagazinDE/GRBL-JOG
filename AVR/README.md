@@ -1,15 +1,16 @@
 ![GitHub Logo](/AVR/doc/media/Grbl Logo 250px.png)
 
+***
+
 #Grbl 0.9j/jog
 
-- Angepasst auf GRBL Version 0.9j
+- GRBL Version 0.9j angepasst für ATmega644 mit Jog-Taster-Eingängen und Speed-Einstellung über Analogeingang wie auf GRBL-JOG-Platine
 - Standard-Format der Statusmeldung und Befehlsverarbeitung wie im offiziellen Grbl-Build 
-- Jog-Routinen nun Interrupt-gesteuert, keine Störungen des Motorlaufs
+- Jog-Routinen nun Interrupt-gesteuert, keine Störungen des Motorlaufs bei Statusabfrage
 - stark verbesserte Performance
 - Beschleunigungswerte und und Seek-Geschwindigkeit für jede Achse getrennt einstellbar
 - keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
 - Schnittstelle jetzt 115200 Bd, 8n1
-
 
 ***
 
