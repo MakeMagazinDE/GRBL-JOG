@@ -22,9 +22,15 @@ at644boot.bat	 - flasht nur bootloader
 at644grbl.bat  - flasht nur GRBL
 at644.bat      - flasht beides nacheinander
 
-Zur Programmierung seriell über vorhandenen Bootloader:
+Anwendung: at644 XX mit XX = Nummer des DIAMEX Programmer COM-Ports (siehe Geräte-Manager, meldet sich als ERFOS)
 
-at644ada.bat   - flasht GRBL über bereits installierten Adafruit-kompatiblen Bootloader
+
+Zur Programmierung seriell über vorhandenen Adafruit-kompatiblen Bootloader - Controller muss zeitgleich (!)
+mit dem Batch extern resettet werden, damit der Bootloader aktiviert wird
+
+at644ada.bat   - flasht GRBL über bereits installierten Bootloader 
+
+Anwendung: at644 XX mit XX = Nummer des virtuellen COM-Ports (siehe Geräte-Manager)
 
 ***
 
