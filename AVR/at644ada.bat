@@ -1,3 +1,4 @@
+echo off
 echo Serial GRBL flasher for Adafruit 644 Bootloader
 echo Works only with installed bootloader.hex on ATmega644p!
 echo Usage: at644ada XX with XX = # of virtual USB COM port

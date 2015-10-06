@@ -7,24 +7,30 @@ Maker Media GmbH und c't, Heise Zeitschriften Verlag
 #Grbl 0.9j/jog
 
 - GRBL Version 0.9j angepasst für ATmega644 mit Jog-Taster-Eingängen und Speed-Einstellung über Analogeingang wie auf GRBL-JOG-Platine
+- Unterstützt neues CNC-Steuerprogramm **GRBLize 1.0c** (siehe unsere anderen Repositories)
 - Standard-Format der Statusmeldung und Befehlsverarbeitung wie im offiziellen Grbl-Build 
 - Jog-Routinen nun Interrupt-gesteuert, keine Störungen des Motorlaufs bei Statusabfrage
-- stark verbesserte Performance
+- Stark verbesserte Performance
 - Beschleunigungswerte und und Seek-Geschwindigkeit für jede Achse getrennt einstellbar
-- keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
-- Schnittstelle jetzt 115200 Bd, 8n1
+- Deshalb keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
+- Schnittstelle jetzt **115200 Bd, 8n1**
 - Weitreichende Anpassungen möglich, siehe 'config.h' und 'cpu_map_atmega644p.h'
-- Unterstützt neues CNC-Steuerprogramm GRBLize 1.0b (siehe unsere anderen Repositories)
 
-Für DIAMEX ISP-Programmer (z.B. von Reichelt): Batch-Files für Windows, programmieren Adafruit/Arduino-kompatiblen Bootloader
+**Für DIAMEX ISP-Programmer (z.B. von Reichelt): Batch-Files für Windows, programmieren Adafruit/Arduino-kompatiblen Bootloader**
 
-at644boot.bat	 - flasht nur bootloader
-at644grbl.bat  - flasht nur GRBL
-at644.bat      - flasht beides nacheinander
+- **at644boot.bat**	flasht nur Bootloader.hex
+- **at644grbl.bat**	flasht nur GRBL.hex
+- **at644.bat**	flasht beides nacheinander
 
-Zur Programmierung seriell über vorhandenen Bootloader:
+Anwendung: at644 XX mit XX = Nummer des DIAMEX Programmer COM-Ports (siehe Geräte-Manager, meldet sich als ERFOS)
 
-at644ada.bat   - flasht GRBL über bereits installierten Adafruit-kompatiblen Bootloader
+
+**Zur Programmierung seriell über vorhandenen Adafruit-kompatiblen Bootloader - Controller muss zeitgleich (!)
+mit dem Batch extern resettet werden, damit der Bootloader aktiviert wird**
+
+- **at644ada.bat**	flasht GRBL.hex über bereits installierten Bootloader 
+
+Anwendung: at644 XX mit XX = Nummer des virtuellen COM-Ports (siehe Geräte-Manager)
 
 ***
 
