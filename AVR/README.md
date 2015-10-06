@@ -16,6 +16,16 @@ Maker Media GmbH und c't, Heise Zeitschriften Verlag
 - Weitreichende Anpassungen möglich, siehe 'config.h' und 'cpu_map_atmega644p.h'
 - Unterstützt neues CNC-Steuerprogramm GRBLize 1.0b (siehe unsere anderen Repositories)
 
+Für DIAMEX ISP-Programmer (z.B. von Reichelt): Batch-Files für Windows, programmieren Adafruit/Arduino-kompatiblen Bootloader
+
+at644boot.bat	 - flasht nur bootloader
+at644grbl.bat  - flasht nur GRBL
+at644.bat      - flasht beides nacheinander
+
+Zur Programmierung seriell über vorhandenen Bootloader:
+
+at644ada.bat   - flasht GRBL über bereits installierten Adafruit-kompatiblen Bootloader
+
 ***
 
 ![GitHub Logo](/AVR/doc/media/Grbl Logo 250px.png)
