@@ -431,7 +431,15 @@ void report_realtime_status()
  
   // Report current machine state
   switch (sys.state) {
-    case STATE_IDLE: printPgmString(PSTR("<Idle")); break;
+    case STATE_IDLE: {
+    		if (zero_request_flag) 
+    			{
+    			printPgmString(PSTR("<Zero")); 
+    			} else {
+    			printPgmString(PSTR("<Idle")); 
+    		}    				
+    		break;
+    	}
     case STATE_MOTION_CANCEL: // Report run state.
     case STATE_CYCLE: printPgmString(PSTR("<Run")); break;
     case STATE_HOLD: printPgmString(PSTR("<Hold")); break;
@@ -440,6 +448,7 @@ void report_realtime_status()
     case STATE_CHECK_MODE: printPgmString(PSTR("<Check")); break;
     case STATE_SAFETY_DOOR: printPgmString(PSTR("<Door")); break;
   }
+	zero_request_flag=0;
  
   // If reporting a position, convert the current step count (current_position) to millimeters.
   if (bit_istrue(settings.status_report_mask,(BITFLAG_RT_STATUS_MACHINE_POSITION | BITFLAG_RT_STATUS_WORK_POSITION))) {

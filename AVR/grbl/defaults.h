@@ -30,9 +30,14 @@
 // Only define the DEFAULT_XXX with where to find the corresponding default_XXX.h file.
 // Don't #define defaults_h here, let the selected file do it. Prevents including more than one.
 
-#ifdef DEFAULTS_GRBLJOG
+#ifdef DEFAULTS_GRBLJOG_ALU
   // Grbl generic default settings. Should work across different machines.
-  #include "defaults/defaults_grbljog.h"
+  #include "defaults/defaults_grbljog_alu.h"
+#endif
+
+#ifdef DEFAULTS_GRBLJOG_WOOD
+  // Grbl generic default settings. Should work across different machines.
+  #include "defaults/defaults_grbljog_wood.h"
 #endif
 
 #ifdef DEFAULTS_GENERIC

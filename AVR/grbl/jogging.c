@@ -46,6 +46,7 @@ static uint8_t jog_bits, jog_bits_old, jog_exit, last_sys_state;
 static uint8_t jstep_bits; 
 static uint8_t jdir_bits; 
 static uint8_t reverse_flag;
+static uint8_t homedir_flag;
 static uint8_t jog_select; 
 static uint16_t skip_max; 
 static volatile long work_position;
@@ -113,6 +114,7 @@ void jogpad_check()
 	jstep_bits = 0; 
 	jdir_bits = 0; 
 	reverse_flag = 0;
+	homedir_flag = 0;
 	jog_select = 0; 
   jog_bits = 0;
   
@@ -187,6 +189,9 @@ void jogpad_check()
         }
       }
     } else {
+			zero_request_flag=1;
+/*
+// Nicht mehr selbsttätige Nullung, sondern <Zero...> beim nächsten Status-Request senden, siehe report.c
     	
 //  gc_state.position[N_AXIS];      // Where the interpreter considers the tool to be at this point in the code
 //  gc_state.coord_system[N_AXIS];  // Current work coordinate system (G54+). Stores offset from absolute machine
@@ -194,8 +199,7 @@ void jogpad_check()
 //  gc_state.coord_offset[N_AXIS];  // Retains the G92 coordinate offset (work coordinates) relative to
                                   	// machine zero in mm. Non-persistent. Cleared upon reset and boot.    
     	
-      for (i=0; i<N_AXIS; i++) { // Axes indices are consistent, so loop may be used.
-      	
+      for (i=0; i<N_AXIS; i++) { // Axes indices are consistent, so loop may be used.      	
         if (i == Z_AXIS) 
         	{ 
         		gc_state.coord_offset[i] = gc_state.position[i] - 10; 
@@ -207,6 +211,7 @@ void jogpad_check()
       	}  
 
     	return;
+*/
     }	
   }
   ADCSRA = ADCSRA_init | (1<<ADIF); //0x93, clear ADIF
@@ -244,9 +249,11 @@ void jogpad_check()
   }                                                            
   if (jog_bits & (1<<JOGFWD_Z_BIT)) { // Z forward switch on
     jstep_bits = jdir_bits ^ (1<<Z_STEP_BIT);
-    // reverse_flag = 1; // positive Z dir!
     jog_select = 2;
   } 
+  homedir_flag = reverse_flag;  // Richtung der Schalter, Begrenzung Jogging invertrieren wenn positive Richtung
+  if (!bit_istrue(settings.homing_dir_mask,bit(jog_select))) {
+    homedir_flag = homedir_flag ^ 1; }
 
 	// (JOG_MAX_SPEED-JOG_MIN_SPEED)/256
 	uint32_t max_frequ;
@@ -373,7 +380,7 @@ void jog_isr() {
 
 		OCR1A = step_delay; 	// Counter ist jetzt auf Null, darf neu gesetzt werden
 
-    if (limit_state && reverse_flag) { jog_exit = 1; } // immediate stop on any switch
+    if (limit_state && homedir_flag) { jog_exit = 1; } // immediate stop on any switch
  
     if (jog_bits == jog_bits_old) { // nothing changed
       if (step_rate < (dest_step_rate - 5)) { // Hysterese für A/D-Wandlung

@@ -72,6 +72,7 @@
 #define MESSAGE_RESTORE_DEFAULTS 8
 
 float print_position[N_AXIS];  // last reported work position
+uint8_t zero_request_flag;  // Contains default boolean settings
 
 // Prints system status messages.
 void report_status_message(uint8_t status_code);

@@ -141,10 +141,10 @@
 
   
 // Define probe switch input pin.
-#define PROBE_DDR       DDRC
-#define PROBE_PIN       PINC
-#define PROBE_PORT      PORTC
-#define PROBE_BIT       5  // Uno Analog Pin 5
+#define PROBE_DDR       DDRB
+#define PROBE_PIN       PINB
+#define PROBE_PORT      PORTB
+#define PROBE_BIT       4  // SS pin -cm
 #define PROBE_MASK      (1<<PROBE_BIT)
 
 // Start of PWM & Stepper Enabled Spindle
