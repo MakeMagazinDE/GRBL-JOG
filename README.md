@@ -15,7 +15,7 @@ Update für GRBLize CNC-Steuerung aus c't Hacks/Make: 4/2014
 - Beschleunigungswerte und und Seek-Geschwindigkeit für jede Achse getrennt einstellbar
 - keine Z-Skalierung mehr erforderlich bei der Make: Sperrholzfräse
 - Schnittstelle jetzt 115200 Bd, 8n1
-- Z-Probe-Eingang bei der aktuellen Version der GRBL-JOG-Firmware ist Pin 5 (PB4, SPI SS) des ATmega644. Dieser Eingang ist an PL7 (ISP) Pin 3 zugänglich. Für erhöhte Störsicherheit sollte ein Pull-up-Widerstand 4k7 nach +5V und ggf. ein Eingangsfilter wie an den anderen Schalter-Eingängen vorgesehen werden. Eine überarbeitete GRBL-JOG-Platine ist in Planung.
+- Z-Probe-Eingang ist Pin 5 (PB4, SPI SS) des ATmega644. Dieser Eingang ist an PL7 (ISP) Pin 3 zugänglich. Für erhöhte Störsicherheit sollte ein Pull-up-Widerstand 4k7 nach +5V und ggf. ein Eingangsfilter wie an den anderen Schalter-Eingängen vorgesehen werden. Eine überarbeitete GRBL-JOG-Platine ist in Planung.
 
 
 #Grbl 0.8c/jog.2 
